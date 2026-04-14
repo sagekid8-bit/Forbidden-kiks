@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FORBIDDEN KIKS - Admin</title>
+<style>
+:root{--a:#ff4d7d;--b:#ff8a3d;--c:#8b5cf6;--d:#22d3ee;--e:#f59e0b;--muted:#c5bdd9}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;color:#fff;background:radial-gradient(circle at top,#2a1248 0,#0b0615 30%,#05010a 70%,#020104 100%);min-height:100vh}
+header{position:sticky;top:0;padding:18px 14px 14px;background:rgba(5,1,10,.82);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,.08);z-index:10}
+.brand{text-align:center;margin:0;font-size:clamp(2rem,5vw,3.8rem);line-height:1;letter-spacing:3px;font-weight:900;background:linear-gradient(90deg,var(--a),var(--b),var(--e),var(--d),var(--c),var(--a));-webkit-background-clip:text;background-clip:text;color:transparent}
+.tagline{text-align:center;margin:10px 0 0;font-size:clamp(.9rem,2.2vw,1.15rem);letter-spacing:2px;text-transform:uppercase;color:#f2eefe}
+.tagline span{display:inline-block;padding:7px 14px;border-radius:999px;background:linear-gradient(90deg,rgba(255,77,125,.18),rgba(139,92,246,.18),rgba(34,211,238,.18));border:1px solid rgba(255,255,255,.12)}
+.wrap{padding:14px;max-width:1300px;margin:0 auto}
+.panel{background:linear-gradient(180deg,rgba(24,19,38,.95),rgba(10,8,18,.98));border:1px solid rgba(255,255,255,.09);border-radius:22px;overflow:hidden;margin-top:14px}
+.section{padding:16px}
+.search,input[type=number],input[type=text],input[type=password],textarea{width:100%;background:#141121;color:#fff;border:1px solid #342b52;border-radius:12px;padding:12px;font-size:15px}
+.btn{border:0;border-radius:14px;padding:12px 16px;font-weight:800;color:#fff;background:linear-gradient(135deg,var(--a),var(--b));cursor:pointer}
+.ghost{background:#1b1730;border:1px solid #342b52}
+.toolbar,.footerbar,.adminbar{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.hidden{display:none}
+.muted{color:var(--muted)}
+.row2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.item,.adminproduct{background:#12101d;border:1px solid #2f2748;border-radius:16px;padding:10px;margin-top:10px}
+.itemhead,.drafthead{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.previewbox{margin-top:10px;border-radius:16px;overflow:hidden;border:1px solid #342b52;background:#0d0a14}
+.previewbox img{width:100%;height:220px;object-fit:cover;display:block}
+.colorgrid,.sizegrid{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid #342b52;border-radius:999px;background:#141121;cursor:pointer;user-select:none}
+.colorbox{width:16px;height:16px;border-radius:4px;border:1px solid rgba(255,255,255,.25)}
+label{display:block;margin:12px 0 8px;font-weight:700;color:#f2eefe}
+</style>
+</head>
+<body>
+<header>
+<h1 class="brand">FORBIDDEN KIKS</h1>
+<p class="tagline"><span>Admin Control Center</span></p>
+</header>
+
+<div class="wrap">
+  <div class="panel">
+    <div class="section">
+      <div id="loginBox">
+        <h2>Admin Login</h2>
+        <input id="pw" type="password" class="search" placeholder="Password">
+        <div class="toolbar">
+          <button class="btn" onclick="login()">Unlock</button>
+          <a class="btn ghost" href="index.html">Back to Store</a>
+        </div>
+      </div>
+
+      <div id="adminBox" class="hidden">
+        <div class="adminbar">
+          <button class="btn ghost" onclick="loadProducts()">Load Products</button>
+          <button class="btn ghost" onclick="toggleDrafts()">Hide Drafts</button>
+          <button class="btn ghost" onclick="logout()">Lock</button>
+          <a class="btn ghost" href="index.html">Store Link</a>
+        </div>
+
+        <p class="muted" id="draftState">Drafts: 0</p>
+        <div id="draftList"></div>
+
+        <div class="panel" style="margin-top:14px">
+          <div class="section">
+            <h3 style="margin-top:0">Product Editor</h3>
+            <input type="hidden" id="editIndex" value="-1">
+
+            <div class="row2">
+              <input id="aName" class="search" placeholder="Shoe name">
+              <input id="aPrice" class="search" type="number" placeholder="Price">
+            </div>
+
+            <input id="aSale" class="search" placeholder="Sale text" style="margin-top:10px">
+            <input id="aImg" class="search" placeholder="Image URL" style="margin-top:10px">
+
+            <div id="previewBox" class="previewbox hidden">
+              <img id="previewImg" src="" alt="Preview">
+            </div>
+
+            <textarea id="aDesc" rows="3" class="search" placeholder="Description" style="margin-top:10px"></textarea>
+
+            <label>Colors</label>
+            <div id="colorBox" class="colorgrid"></div>
+
+            <label>Sizes</label>
+            <div id="sizeBox" class="sizegrid"></div>
+
+            <div class="footerbar">
+              <button class="btn" onclick="saveCurrent()">Save</button>
+              <button class="btn ghost" onclick="deleteCurrent()">Delete</button>
+              <button class="btn ghost" onclick="clearEditor()">Clear Form</button>
+            </div>
+          </div>
+        </div>
+
+        <h3 style="margin-top:18px">All Products</h3>
+        <div id="adminProducts"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const PASS='031005';
+const SOURCE='products.json';
+const DRAFT_KEY='fk_draft_products';
+const FORM_KEY='fk_admin_form';
+const ADMIN_KEY='fk_admin_products';
+const COLORS=['Black','White','Red','Blue','Green','Yellow','Pink','Purple','Orange','Brown','Grey','Beige','Gold','Silver','Navy','Teal','Maroon','Cream','Olive','Mint'];
+const SIZE_OPTIONS=[1,2,3,4,5,6,7,8];
+const $=id=>document.getElementById(id);
+
+let logged=false,editingIndex=-1,draftsVisible=true,adminProducts=[],draftProducts=[];
+
+function hex(c){return({Black:'#000',White:'#fff',Red:'#ff4d4d',Blue:'#4d7dff',Green:'#37c871',Yellow:'#ffd84d',Pink:'#ff77b7',Purple:'#8b5cf6',Orange:'#ff8a3d',Brown:'#8d5a3b',Grey:'#9aa0a6',Beige:'#e8d7b3',Gold:'#d4af37',Silver:'#c0c0c0',Navy:'#1d3f72',Teal:'#1ba7a1',Maroon:'#7f1734',Cream:'#fff4d6',Olive:'#808000',Mint:'#98ff98'})[c]||'#777'}
+function safe(s){return String(s??'')}
+
+function persist(){localStorage.setItem(ADMIN_KEY,JSON.stringify(adminProducts))}
+function saveDraftState(){localStorage.setItem(DRAFT_KEY,JSON.stringify(draftProducts))}
+function loadDraftState(){try{draftProducts=JSON.parse(localStorage.getItem(DRAFT_KEY)||'[]');if(!Array.isArray(draftProducts))draftProducts=[]}catch(e){draftProducts=[]}}
+function saveFormDraft(){localStorage.setItem(FORM_KEY,JSON.stringify(formData()))}
+function loadFormDraft(){try{setForm(JSON.parse(localStorage.getItem(FORM_KEY)||'{}'))}catch(e){}}
+
+function setForm(d){
+ $('aName').value=d.name||'';
+ $('aPrice').value=d.price||'';
+ $('aSale').value=d.sale||'';
+ $('aImg').value=d.img||'';
+ $('aDesc').value=d.desc||'';
+ renderColorBox(d.colors||[]);
+ renderSizeBox(d.sizes||[]);
+ updatePreview();
+}
+
+function formData(){
+ return{
+  name:$('aName').value.trim(),
+  price:Number($('aPrice').value||0),
+  sale:$('aSale').value.trim(),
+  img:$('aImg').value.trim(),
+  desc:$('aDesc').value.trim(),
+  colors:[...document.querySelectorAll('input[name="colors"]:checked')].map(x=>x.value),
+  sizes:[...document.querySelectorAll('input[name="sizes"]:checked')].map(x=>Number(x.value))
+ };
+}
+
+function renderColorBox(selected){
+ $('colorBox').innerHTML=COLORS.map(c=>`<label class="chip"><input type="checkbox" name="colors" value="${c}" ${selected.includes(c)?'checked':''} onchange="saveFormDraft()"><span class="colorbox" style="background:${hex(c)}"></span>${c}</label>`).join('');
+}
+function renderSizeBox(selected){
+ $('sizeBox').innerHTML=SIZE_OPTIONS.map(s=>`<label class="chip"><input type="checkbox" name="sizes" value="${s}" ${selected.map(String).includes(String(s))?'checked':''} onchange="saveFormDraft()">${s}</label>`).join('');
+}
+
+function updatePreview(){
+ const url=$('aImg').value.trim();
+ if(url){
+  $('previewBox').classList.remove('hidden');
+  $('previewImg').src=url;
+  $('previewImg').onerror=()=>$('previewBox').classList.add('hidden');
+  $('previewImg').onload=()=>$('previewBox').classList.remove('hidden');
+ }else $('previewBox').classList.add('hidden');
+}
+
+function clearEditor(){editingIndex=-1;setForm({name:'',price:'',sale:'',img:'',desc:'',colors:[],sizes:[]});saveFormDraft()}
+function login(){if($('pw').value===PASS){logged=true;$('loginBox').classList.add('hidden');$('adminBox').classList.remove('hidden');loadFormDraft();renderDrafts();renderAdminProducts()}else alert('Wrong password')}
+function logout(){logged=false;$('loginBox').classList.remove('hidden');$('adminBox').classList.add('hidden');$('pw').value=''}
+
+function toggleDrafts(){draftsVisible=!draftsVisible;$('draftList').classList.toggle('hidden',!draftsVisible);$('draftState').textContent='Drafts: '+draftProducts.length+(draftsVisible?'':' (hidden)')}
+function renderDrafts(){
+ $('draftState').textContent='Drafts: '+draftProducts.length+(draftsVisible?'':' (hidden)');
+ $('draftList').classList.toggle('hidden',!draftsVisible);
+ $('draftList').innerHTML=draftProducts.length?draftProducts.map((p,i)=>`<div class="item"><div class="itemhead"><div><b>${safe(p.name)}</b><div class="muted">R${p.price||0} • ${safe(p.sale)}</div></div><div class="footerbar" style="margin-top:0"><button class="btn ghost" onclick="editDraft(${i})">Edit</button><button class="btn ghost" onclick="removeDraft(${i})">Remove</button></div></div></div>`).join(''):'<div class="muted">No drafts yet.</div>';
+}
+function editDraft(i){const d=draftProducts[i];if(!d)return;editingIndex=-1;setForm(d);saveFormDraft()}
+function removeDraft(i){if(confirm('Remove this draft?')){draftProducts.splice(i,1);saveDraftState();renderDrafts()}}
+
+function buildCard(p,i){return `<div class="adminproduct"><div class="drafthead"><div><b>${safe(p.name)||'Untitled'}</b><div class="draftmeta">R${p.price||0} • ${safe(p.sale)}</div></div><div class="footerbar" style="margin-top:0"><button class="btn ghost" onclick="setEditorByIndex(${i})">Edit</button><button class="btn ghost" onclick="saveRow(${i})">Save</button><button class="btn ghost" onclick="deleteRow(${i})">Delete</button></div></div></div>`}
+function renderAdminProducts(){$('adminProducts').innerHTML=adminProducts.length?adminProducts.map((p,i)=>buildCard(p,i)).join(''):'<div class="muted" style="margin-top:10px">No products loaded yet.</div>'}
+function setEditorByIndex(i){editingIndex=i;const p=adminProducts[i];setForm({name:p.name||'',price:p.price||'',sale:p.sale||'',img:p.img||'',desc:p.desc||'',colors:p.colors||[],sizes:p.sizes||[]})}
+function saveCurrent(){if(!logged)return;if(editingIndex<0||!adminProducts[editingIndex])return alert('Choose a product first');adminProducts[editingIndex]={...adminProducts[editingIndex],...formData()};persist();renderAdminProducts();alert('Saved')}
+function deleteCurrent(){if(!logged)return;if(editingIndex<0||!adminProducts[editingIndex])return alert('Choose a product first');if(!confirm('Delete this product?'))return;adminProducts.splice(editingIndex,1);editingIndex=-1;persist();clearEditor();renderAdminProducts()}
+function saveRow(i){setEditorByIndex(i);saveCurrent()}
+function deleteRow(i){editingIndex=i;deleteCurrent()}
+
+async function loadProducts(){
+ const res=await fetch(SOURCE);
+ const data=await res.json();
+ const arr=Array.isArray(data.products)?data.products:(Array.isArray(data)?data:[]);
+ adminProducts=arr.map(p=>({name:p.name||'',price:Number(p.price||0),sale:p.sale||'',img:p.img||'',desc:p.desc||'',colors:Array.isArray(p.colors)?p.colors:[],sizes:Array.isArray(p.sizes)?p.sizes:[]}));
+ persist();renderAdminProducts();alert('Products loaded')
+}
+
+['aName','aPrice','aSale','aImg','aDesc'].forEach(id=>$(id).addEventListener('input',()=>{saveFormDraft();updatePreview()}));
+document.addEventListener('change',e=>{if(e.target.name==='colors' || e.target.name==='sizes') saveFormDraft()});
+
+loadDraftState();
+setForm({name:'',price:'',sale:'',img:'',desc:'',colors:[],sizes:[]});
+</script>
+</body>
+</html>
