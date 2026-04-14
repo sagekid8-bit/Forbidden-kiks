@@ -104,6 +104,7 @@ label{display:block;margin:12px 0 8px;font-weight:700;color:#f2eefe}
 
 <script>
 const PASS='031005';
+const SOURCE='products.json';
 const STORE_KEY='fk_products_store';
 const DRAFT_KEY='fk_draft_products';
 const FORM_KEY='fk_admin_form';
@@ -122,7 +123,6 @@ function safe(s){return String(s??'')}
 
 function persistProducts(){
  localStorage.setItem(STORE_KEY,JSON.stringify(adminProducts));
- localStorage.setItem(ADMIN_KEY,JSON.stringify(adminProducts));
 }
 
 function loadPersisted(){
