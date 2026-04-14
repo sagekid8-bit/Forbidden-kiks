@@ -79,7 +79,6 @@ function persistCart(){localStorage.setItem('fk_cart',JSON.stringify(cart))}
 function safe(s){return String(s??'')}
 function filtered(){const q=$('search').value.trim().toLowerCase();return products.filter(p=>!q||[p.name,p.desc,(p.colors||[]).join(' '),(p.sizes||[]).join(' ')].join(' ').toLowerCase().includes(q))}
 function clampPage(){const max=Math.max(0,Math.ceil(filtered().length/per)-1);page=Math.max(0,Math.min(page,max))}
-
 function render(){
  clampPage();
  const list=filtered(),slice=list.slice(page*per,page*per+per);
@@ -91,7 +90,6 @@ function render(){
  $('cartCount').textContent=cart.reduce((a,b)=>a+b.qty,0);
  renderCart();
 }
-
 function addToCart(i){const p=products[i],color=$('c'+i)?.value||'',size=$('s'+i)?.value||'';const ex=cart.find(x=>x.i===i&&x.color===color&&x.size===size);if(ex)ex.qty++;else cart.push({i,name:p.name,price:p.price,color,size,img:p.img,qty:1});persistCart();render()}
 function renderCart(){const box=$('cartList');box.innerHTML=cart.length?cart.map((x,n)=>`<div class="item"><img src="${x.img||''}" onerror="this.style.display='none'"><div><div><b>${safe(x.name)}</b></div><div class="muted">Color: ${safe(x.color)} • Size: ${safe(x.size)}</div><div class="muted">R${x.price} x ${x.qty}</div></div><div class="qty"><button onclick="chg(${n},-1)">-</button><span>${x.qty}</span><button onclick="chg(${n},1)">+</button><button onclick="del(${n})">x</button></div></div>`).join(''):'<div class="muted">Cart is empty.</div>'}
 function chg(n,d){cart[n].qty+=d;if(cart[n].qty<1)cart.splice(n,1);persistCart();render()}
@@ -106,11 +104,7 @@ function prevPage(){page--;render()}
 function nextPage(){page++;render()}
 function loadStoreProducts(){
  const saved=localStorage.getItem(STORE_KEY);
- if(saved){
-  try{products=JSON.parse(saved)||[]}catch(e){products=[]}
-  render();
-  return;
- }
+ if(saved){try{products=JSON.parse(saved)||[]}catch(e){products=[]}render();return}
  fetch(SOURCE).then(r=>r.json()).then(data=>{
   products=Array.isArray(data.products)?data.products:(Array.isArray(data)?data:[]);
   localStorage.setItem(STORE_KEY,JSON.stringify(products));
