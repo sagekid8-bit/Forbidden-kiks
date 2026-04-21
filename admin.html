@@ -98,6 +98,7 @@ select,input[type=number],input[type=text],textarea{width:100%;background:#14112
 
 <div class="wrap">
 
+  <!-- LOGIN -->
   <div id="loginBox" class="card">
     <div class="field"><label class="label">Admin Password</label>
       <input id="pw" type="password" class="search" placeholder="Enter password..." onkeydown="if(event.key==='Enter')login()">
@@ -108,6 +109,7 @@ select,input[type=number],input[type=text],textarea{width:100%;background:#14112
     </div>
   </div>
 
+  <!-- ADMIN -->
   <div id="adminBox" class="hidden">
 
     <div class="statusbar">
@@ -124,6 +126,7 @@ select,input[type=number],input[type=text],textarea{width:100%;background:#14112
       <button class="tab" onclick="switchTab('products',this)">📦 All Products</button>
     </div>
 
+    <!-- EDITOR TAB -->
     <div id="tabEditor" class="layout">
       <div>
         <div class="card">
@@ -207,6 +210,7 @@ select,input[type=number],input[type=text],textarea{width:100%;background:#14112
         </div>
       </div>
 
+      <!-- LIVE PREVIEW -->
       <div class="preview-wrap">
         <div style="font-size:.8rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Live Preview</div>
         <div class="preview-card">
@@ -226,6 +230,7 @@ select,input[type=number],input[type=text],textarea{width:100%;background:#14112
       </div>
     </div>
 
+    <!-- DRAFTS TAB -->
     <div id="tabDrafts" class="hidden">
       <div class="card" style="padding:14px;margin-bottom:12px">
         <b>Drafts</b>
@@ -238,6 +243,7 @@ select,input[type=number],input[type=text],textarea{width:100%;background:#14112
       <div id="draftList"></div>
     </div>
 
+    <!-- PRODUCTS TAB -->
     <div id="tabProducts" class="hidden">
       <div class="card" style="padding:12px">
         <div class="row2">
@@ -268,6 +274,7 @@ select,input[type=number],input[type=text],textarea{width:100%;background:#14112
         <button class="smallbtn" onclick="clearSelection()">Clear</button>
       </div>
 
+      <!-- DOWNLOAD BUTTON — prominent, always visible in products tab -->
       <div style="margin-bottom:14px">
         <button class="btn" style="width:100%;padding:14px;font-size:1rem" onclick="downloadJSON()">
           ⬇️ Download products.json
@@ -313,7 +320,8 @@ const SUB_CATS = {
 const SHOE_SIZES  = ['1','2','3','4','5','6','7','8'];
 const CLOTH_SIZES = ['XXS','XS','S','M','L','XL','XXL','One Size'];
 
-let allProducts    = [];
+// ── State ────────────────────────────────────────────────────────────────────
+let allProducts    = [];   // everything loaded from products.json
 let drafts         = JSON.parse(localStorage.getItem(DRAFT_KEY)||'[]');
 let editingId      = null;
 let editingDraftId = null;
@@ -322,6 +330,7 @@ let selectedColors = new Set();
 let selectedSizes  = new Set();
 let dragSrcIdx     = null;
 
+// ── Helpers ──────────────────────────────────────────────────────────────────
 function uid(){ return 'p_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,7) }
 
 function setStatus(msg, state='saved'){
@@ -330,6 +339,7 @@ function setStatus(msg, state='saved'){
   $('productCountTop').textContent = allProducts.length+' products';
 }
 
+// ── Auth ─────────────────────────────────────────────────────────────────────
 function login(){
   if($('pw').value !== PASS){ alert('Wrong password'); $('pw').value=''; $('pw').focus(); return; }
   $('loginBox').classList.add('hidden');
@@ -339,6 +349,7 @@ function login(){
   syncSizeOptions();
   restoreFormDraft();
   updateDraftTabCount();
+  // Load products from products.json
   setStatus('Loading products...','saving');
   fetch('products.json')
     .then(r=>{ if(!r.ok) throw new Error(); return r.json(); })
@@ -349,14 +360,11 @@ function login(){
       renderProductList();
       setStatus('Loaded '+allProducts.length+' products from products.json','saved');
     })
-    .catch(()=>{
-      allProducts=[];
-      renderProductList();
-      setStatus('Could not load products.json — add products manually','saved');
-    });
+    .catch(()=>{ allProducts=[]; renderProductList(); setStatus('Could not load products.json — add products manually','saved'); });
 }
 $('pw').addEventListener('keydown', e=>{ if(e.key==='Enter') login(); });
 
+// ── Tabs ─────────────────────────────────────────────────────────────────────
 function switchTab(tab, btn){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   btn.classList.add('active');
@@ -367,6 +375,7 @@ function switchTab(tab, btn){
   if(tab==='drafts') renderDraftList();
 }
 
+// ── Color grid ────────────────────────────────────────────────────────────────
 function buildColorGrid(){
   $('colorGrid').innerHTML = COLOR_OPTIONS.map(([name,color])=>`
     <label class="colorOpt">
@@ -379,6 +388,7 @@ function selectAllColors(){ selectedColors=new Set(COLOR_OPTIONS.map(x=>x[0])); 
 function clearColors(){ selectedColors.clear(); syncColorCbs(); updatePreview(); }
 function syncColorCbs(){ $('colorGrid').querySelectorAll('input').forEach(i=>i.checked=selectedColors.has(i.value)); }
 
+// ── Sub categories ────────────────────────────────────────────────────────────
 function syncSubCats(){
   const main=$('aMainCategory').value;
   const opts=SUB_CATS[main]||SUB_CATS.default;
@@ -387,25 +397,20 @@ function syncSubCats(){
   if(opts.includes(cur)) $('aSubCategory').value=cur;
 }
 
+// ── Sizes ─────────────────────────────────────────────────────────────────────
 function getSizes(cat){ return cat==='Shoes'?SHOE_SIZES:['Men','Women','Kids'].includes(cat)?CLOTH_SIZES:[]; }
 function syncSizeOptions(){
   const cat=$('aMainCategory').value, sizes=getSizes(cat);
   $('sizeLabel').textContent = cat==='Shoes'?'Shoe Sizes':sizes.length?'Clothing Sizes':'Sizes (none for this category)';
-  if(!sizes.length){
-    $('sizeGrid').innerHTML='<div class="muted" style="font-size:.85rem;padding:8px">No sizes for this category</div>';
-    selectedSizes.clear();
-    return;
-  }
+  if(!sizes.length){ $('sizeGrid').innerHTML='<div class="muted" style="font-size:.85rem;padding:8px">No sizes for this category</div>'; selectedSizes.clear(); return; }
   $('sizeGrid').innerHTML=sizes.map(s=>`<div class="sizeBtn ${selectedSizes.has(String(s))?'on':''}" onclick="toggleSize('${s}',this)">${s}</div>`).join('');
 }
-function toggleSize(val,el){
-  selectedSizes.has(String(val))?(selectedSizes.delete(String(val)),el.classList.remove('on')):(selectedSizes.add(String(val)),el.classList.add('on'));
-  updatePreview();
-}
+function toggleSize(val,el){ selectedSizes.has(String(val))?(selectedSizes.delete(String(val)),el.classList.remove('on')):(selectedSizes.add(String(val)),el.classList.add('on')); updatePreview(); }
 function selectAllSizes(){ selectedSizes=new Set(getSizes($('aMainCategory').value).map(String)); syncSizeBtns(); updatePreview(); }
 function clearSizes(){ selectedSizes.clear(); syncSizeBtns(); updatePreview(); }
 function syncSizeBtns(){ $('sizeGrid').querySelectorAll('.sizeBtn').forEach(b=>b.classList.toggle('on',selectedSizes.has(b.textContent.trim()))); }
 
+// ── Live preview ──────────────────────────────────────────────────────────────
 function updatePreview(){
   const name=$('aName').value.trim()||'Product Name';
   const price=$('aPrice').value||'0';
@@ -426,6 +431,7 @@ function updatePreview(){
   saveFormDraft();
 }
 
+// ── Form ──────────────────────────────────────────────────────────────────────
 function applyToForm(p){
   $('aName').value=p.name||''; $('aPrice').value=p.price??'';
   $('aMainCategory').value=p.category||'Shoes'; syncSubCats();
@@ -449,6 +455,7 @@ function clearForm(){
 }
 function cancelEdit(){ clearForm(); }
 
+// ── Save product ──────────────────────────────────────────────────────────────
 function saveProduct(){
   const name=$('aName').value.trim();
   const price=parseFloat($('aPrice').value)||0;
@@ -484,6 +491,7 @@ function saveProduct(){
   setStatus('"'+name+'" saved. Download JSON and upload to GitHub to go live.','saved');
 }
 
+// ── Edit / hide / delete ──────────────────────────────────────────────────────
 function editProduct(id){
   const p=allProducts.find(x=>x.id===id); if(!p) return;
   editingId=id; applyToForm(p);
@@ -508,40 +516,16 @@ function deleteProduct(id){
   setStatus('Product deleted. Download JSON to push changes live.','saved');
 }
 
-function toggleSelect(id){
-  selectedIds.has(id)?selectedIds.delete(id):selectedIds.add(id);
-  renderBulkBar();
-  const card=document.querySelector(`.prodCard[data-id="${id}"]`);
-  if(card) card.classList.toggle('selected',selectedIds.has(id));
-  const cb=document.querySelector(`.sel-cb[data-id="${id}"]`);
-  if(cb) cb.checked=selectedIds.has(id);
-}
-function toggleSelectAll(){
-  const should=$('selectAll').checked;
-  document.querySelectorAll('.sel-cb').forEach(cb=>{
-    const id=cb.dataset.id;
-    should?selectedIds.add(id):selectedIds.delete(id);
-    cb.checked=should;
-  });
-  document.querySelectorAll('.prodCard').forEach(c=>c.classList.toggle('selected',should&&selectedIds.has(c.dataset.id)));
-  renderBulkBar();
-}
+// ── Bulk ──────────────────────────────────────────────────────────────────────
+function toggleSelect(id){ selectedIds.has(id)?selectedIds.delete(id):selectedIds.add(id); renderBulkBar(); const card=document.querySelector(`.prodCard[data-id="${id}"]`); if(card) card.classList.toggle('selected',selectedIds.has(id)); const cb=document.querySelector(`.sel-cb[data-id="${id}"]`); if(cb) cb.checked=selectedIds.has(id); }
+function toggleSelectAll(){ const should=$('selectAll').checked; document.querySelectorAll('.sel-cb').forEach(cb=>{ const id=cb.dataset.id; should?selectedIds.add(id):selectedIds.delete(id); cb.checked=should; }); document.querySelectorAll('.prodCard').forEach(c=>c.classList.toggle('selected',should&&selectedIds.has(c.dataset.id))); renderBulkBar(); }
 function clearSelection(){ selectedIds.clear(); renderProductList(); $('selectAll').checked=false; }
-function renderBulkBar(){
-  const n=selectedIds.size;
-  $('bulkBar').classList.toggle('hidden',n===0);
-  $('bulkCount').textContent=n+' selected';
-}
+function renderBulkBar(){ const n=selectedIds.size; $('bulkBar').classList.toggle('hidden',n===0); $('bulkCount').textContent=n+' selected'; }
 function bulkHide(){ selectedIds.forEach(id=>{ const p=allProducts.find(x=>x.id===id); if(p) p.visible=false; }); setStatus('Hidden. Download JSON to go live.','saved'); clearSelection(); }
 function bulkUnhide(){ selectedIds.forEach(id=>{ const p=allProducts.find(x=>x.id===id); if(p) p.visible=true; }); setStatus('Unhidden. Download JSON to go live.','saved'); clearSelection(); }
-function bulkDelete(){
-  if(!confirm('Delete '+selectedIds.size+' products?')) return;
-  allProducts=allProducts.filter(x=>!selectedIds.has(x.id));
-  checkDuplicates();
-  setStatus('Deleted. Download JSON to go live.','saved');
-  clearSelection();
-}
+function bulkDelete(){ if(!confirm('Delete '+selectedIds.size+' products?')) return; allProducts=allProducts.filter(x=>!selectedIds.has(x.id)); checkDuplicates(); setStatus('Deleted. Download JSON to go live.','saved'); clearSelection(); }
 
+// ── Duplicate check ───────────────────────────────────────────────────────────
 function checkDuplicates(){
   const seenIds=new Map(), seenNI=new Map(), dupIds=[], dupNI=[];
   allProducts.forEach((p,i)=>{
@@ -557,6 +541,7 @@ function checkDuplicates(){
   box.innerHTML='⚠️ '+msg; box.style.display='block';
 }
 
+// ── Product list ──────────────────────────────────────────────────────────────
 function renderProductList(){
   $('productCountTop').textContent=allProducts.length+' products';
   renderBulkBar();
@@ -569,10 +554,7 @@ function renderProductList(){
   if(vis==='hidden')  list=list.filter(p=>p.visible===false);
   if(q) list=list.filter(p=>[p.name,p.desc,p.category,p.subCategory,(p.colors||[]).join(' '),(p.sizes||[]).join(' ')].join(' ').toLowerCase().includes(q));
 
-  if(!list.length){
-    $('productList').innerHTML='<div class="muted" style="padding:20px;text-align:center">No products found.</div>';
-    return;
-  }
+  if(!list.length){ $('productList').innerHTML='<div class="muted" style="padding:20px;text-align:center">No products found.</div>'; return; }
 
   $('productList').innerHTML=list.map(p=>`
     <div class="prodCard ${p.visible===false?'hidden-item':''} ${selectedIds.has(p.id)?'selected':''}"
@@ -602,19 +584,13 @@ function renderProductList(){
     </div>`).join('');
 }
 
+// ── Drag to reorder ───────────────────────────────────────────────────────────
 function dragStart(e,id){ dragSrcIdx=allProducts.findIndex(x=>x.id===id); e.currentTarget.classList.add('dragging'); e.dataTransfer.effectAllowed='move'; }
 function dragOver(e){ e.preventDefault(); e.dataTransfer.dropEffect='move'; document.querySelectorAll('.prodCard').forEach(c=>c.classList.remove('dragover')); e.currentTarget.classList.add('dragover'); }
-function dragDrop(e,targetId){
-  e.preventDefault();
-  const ti=allProducts.findIndex(x=>x.id===targetId);
-  if(dragSrcIdx===null||dragSrcIdx===ti) return;
-  const moved=allProducts.splice(dragSrcIdx,1)[0];
-  allProducts.splice(ti,0,moved);
-  renderProductList();
-  setStatus('Order changed. Download JSON to go live.','saved');
-}
+function dragDrop(e,targetId){ e.preventDefault(); const ti=allProducts.findIndex(x=>x.id===targetId); if(dragSrcIdx===null||dragSrcIdx===ti) return; const moved=allProducts.splice(dragSrcIdx,1)[0]; allProducts.splice(ti,0,moved); renderProductList(); setStatus('Order changed. Download JSON to go live.','saved'); }
 function dragEnd(){ dragSrcIdx=null; document.querySelectorAll('.prodCard').forEach(c=>c.classList.remove('dragging','dragover')); }
 
+// ── Auto-save form draft ─────────────────────────────────────────────────────
 function saveFormDraft(){
   const data = {
     name:$('aName').value, price:$('aPrice').value,
@@ -633,7 +609,7 @@ function restoreFormDraft(){
     const raw = localStorage.getItem(FORM_KEY);
     if(!raw) return;
     const d = JSON.parse(raw);
-    if(!d.name && !d.img) return;
+    if(!d.name && !d.img) return; // nothing worth restoring
     $('aName').value = d.name||'';
     $('aPrice').value = d.price||'';
     $('aMainCategory').value = d.category||'Shoes';
@@ -658,6 +634,7 @@ function restoreFormDraft(){
   }catch(e){}
 }
 
+// ── Draft system ──────────────────────────────────────────────────────────────
 function getFormProduct(){
   return {
     id: editingDraftId||uid(),
@@ -684,6 +661,7 @@ function saveToDraft(){
     const idx = drafts.findIndex(x=>x.id===editingDraftId);
     if(idx>=0) drafts[idx]=p; else drafts.push(p);
   } else {
+    // Check not already in drafts by name
     const exists = drafts.findIndex(x=>x.name.toLowerCase()===p.name.toLowerCase());
     if(exists>=0){ if(!confirm('"'+p.name+'" is already in drafts. Replace it?')) return; drafts[exists]=p; }
     else drafts.push(p);
@@ -739,6 +717,7 @@ function editDraft(i){
   $('editorTitle').textContent='Editing draft: '+p.name;
   $('editingBadge').classList.remove('hidden');
   $('cancelEditBtn').classList.remove('hidden');
+  // Switch to editor tab
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.tab')[0].classList.add('active');
   $('tabEditor').classList.remove('hidden');
@@ -765,80 +744,38 @@ function clearAllDrafts(){
 
 function publishAllDrafts(){
   if(!drafts.length){ alert('No drafts to publish.'); return; }
-
   if(!allProducts.length){
-    if(!confirm("Your live products haven't been loaded yet. Publish drafts anyway?")) return;
+    if(!confirm("Your live products are not loaded yet. Publish drafts as a new products.json?")) return;
   }
-
-  const existingNames = new Map(allProducts.map(p => [String(p.name||'').toLowerCase(), p.id]));
-  let added = 0;
-  let replaced = 0;
-
-  drafts.forEach(d => {
-    const p = {
-      id: d.id || uid(),
-      name: d.name || 'Untitled',
-      price: parseFloat(d.price) || 0,
-      category: d.category || 'Shoes',
-      subCategory: d.subCategory || 'All Items',
-      visible: d.visible !== false,
-      sale: d.sale || '',
-      img: d.img || '',
-      desc: d.desc || '',
-      colors: Array.isArray(d.colors) && d.colors.length ? d.colors : ['Black','White'],
-      sizes: Array.isArray(d.sizes) ? d.sizes.map(String) : []
-    };
-
-    const key = String(p.name).toLowerCase();
-    const existingIdx = allProducts.findIndex(x => String(x.name||'').toLowerCase() === key);
-
-    if(existingIdx >= 0){
-      allProducts[existingIdx] = p;
-      replaced++;
-    } else if(existingNames.has(key)){
-      const idx = allProducts.findIndex(x => x.id === existingNames.get(key));
-      if(idx >= 0){
-        allProducts[idx] = p;
-        replaced++;
-      } else {
-        allProducts.push(p);
-        added++;
-      }
-    } else {
-      allProducts.push(p);
-      added++;
-    }
+  // Merge drafts into allProducts (replace if same name, else add)
+  drafts.forEach(draft=>{
+    const idx = allProducts.findIndex(x=>x.id===draft.id||x.name.toLowerCase()===draft.name.toLowerCase());
+    if(idx>=0) allProducts[idx]={...allProducts[idx],...draft};
+    else allProducts.push(draft);
   });
-
-  drafts = [];
+  drafts=[];
   localStorage.setItem(DRAFT_KEY, JSON.stringify(drafts));
   updateDraftTabCount();
-  renderDraftList();
   checkDuplicates();
   renderProductList();
-  setStatus(`Published ${added + replaced} draft(s) (${added} added, ${replaced} replaced). Download JSON to go live.`, 'saved');
-  alert(`Published ${added + replaced} draft(s).`);
-}
-
-function downloadJSON(){
-  const data = JSON.stringify({products: allProducts}, null, 2);
-  const blob = new Blob([data], {type:'application/json'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'products.json';
-  a.click();
-  URL.revokeObjectURL(a.href);
-}
-
-function buildInitial(){
-  buildColorGrid();
-  syncSubCats();
-  syncSizeOptions();
   renderDraftList();
-  updateDraftTabCount();
-  updatePreview();
+  // Auto-download
+  downloadJSON();
+  setStatus('All drafts published! Replace products.json on GitHub to go live.','saved');
 }
-buildInitial();
+
+// ── Download products.json ────────────────────────────────────────────────────
+function downloadJSON(){
+  if(!allProducts.length){ alert('No products to download. Load your products first.'); return; }
+  const data={ products: allProducts };
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='products.json';
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+  setStatus('Downloaded! Replace products.json on GitHub to update your store.','saved');
+}
 </script>
 </body>
 </html>
