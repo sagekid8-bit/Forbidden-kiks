@@ -168,8 +168,14 @@ select,input[type=number],input[type=text],textarea{width:100%;background:#14112
             </div>
           </div>
 
-          <div class="field"><label class="label">Image URL</label>
+          <div class="field"><label class="label">Image 1 — Main / Front view</label>
             <input id="aImg" type="text" placeholder="https://..." oninput="updatePreview()">
+          </div>
+          <div class="field"><label class="label">Image 2 — Side view (optional)</label>
+            <input id="aImg2" type="text" placeholder="https://..." oninput="updatePreview()">
+          </div>
+          <div class="field"><label class="label">Image 3 — Top / Back view (optional)</label>
+            <input id="aImg3" type="text" placeholder="https://..." oninput="updatePreview()">
           </div>
           <div class="field"><label class="label">Description</label>
             <textarea id="aDesc" rows="2" placeholder="Short description..." oninput="updatePreview()"></textarea>
@@ -226,6 +232,7 @@ select,input[type=number],input[type=text],textarea{width:100%;background:#14112
               <span class="preview-cat" id="previewCat"></span>
             </div>
             <div class="preview-swatches" id="previewSwatches"></div>
+            <div id="previewThumbs" style="display:none;gap:6px;margin-top:8px;flex-wrap:wrap"></div>
           </div>
         </div>
       </div>
@@ -477,10 +484,19 @@ function updatePreview(){
   $('previewDesc').textContent=desc;
   $('previewPrice').textContent='R'+price;
   $('previewCat').textContent=cat+(sub&&sub!=='All Items'?' · '+sub:'');
+  const img2=$('aImg2').value.trim();
+  const img3=$('aImg3').value.trim();
   const imgEl=$('previewImg');
   imgEl.innerHTML=(sale?`<div class="preview-badge">${sale}</div>`:'')+
     (img?`<img src="${img}" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display='none'">`
         :`<div class="muted" style="text-align:center;padding:20px;font-size:.9rem">Enter image URL</div>`);
+  // Show mini thumbnails for img2/img3 in preview
+  const thumbBox = document.getElementById('previewThumbs');
+  if(thumbBox){
+    const extras=[img2,img3].filter(Boolean);
+    thumbBox.innerHTML=extras.map(s=>`<img src="${s}" style="width:44px;height:44px;border-radius:8px;object-fit:cover;border:1px solid rgba(255,255,255,.15)" onerror="this.style.display='none'">`).join('');
+    thumbBox.style.display=extras.length?'flex':'none';
+  }
   $('previewSwatches').innerHTML=[...selectedColors].slice(0,6).map(c=>`<span class="swatch" title="${c}" style="background:${COLOR_MAP[c]||'#666'}"></span>`).join('');
   saveFormDraft();
 }
@@ -491,7 +507,7 @@ function applyToForm(p){
   $('aMainCategory').value=p.category||'Shoes'; syncSubCats();
   $('aSubCategory').value=p.subCategory||'All Items';
   $('aVisible').value=p.visible===false?'false':'true';
-  $('aSale').value=p.sale||''; $('aImg').value=p.img||''; $('aDesc').value=p.desc||'';
+  $('aSale').value=p.sale||''; $('aImg').value=p.img||''; $('aImg2').value=p.img2||''; $('aImg3').value=p.img3||''; $('aDesc').value=p.desc||'';
   selectedColors=new Set(Array.isArray(p.colors)?p.colors:[]);
   selectedSizes=new Set(Array.isArray(p.sizes)?p.sizes.map(String):[]);
   syncColorCbs(); syncSizeOptions(); updatePreview();
@@ -528,6 +544,8 @@ function saveProduct(){
     visible:$('aVisible').value==='true',
     sale:$('aSale').value.trim(),
     img:$('aImg').value.trim(),
+    img2:$('aImg2').value.trim(),
+    img3:$('aImg3').value.trim(),
     desc:$('aDesc').value.trim(),
     colors, sizes
   };
@@ -652,7 +670,7 @@ function saveFormDraft(){
     name:$('aName').value, price:$('aPrice').value,
     category:$('aMainCategory').value, subCategory:$('aSubCategory').value,
     visible:$('aVisible').value, sale:$('aSale').value,
-    img:$('aImg').value, desc:$('aDesc').value,
+    img:$('aImg').value, img2:$('aImg2').value, img3:$('aImg3').value, desc:$('aDesc').value,
     colors:[...selectedColors], sizes:[...selectedSizes],
     editingId, editingDraftId
   };
@@ -674,6 +692,8 @@ function restoreFormDraft(){
     $('aVisible').value = d.visible||'true';
     $('aSale').value = d.sale||'';
     $('aImg').value = d.img||'';
+    $('aImg2').value = d.img2||'';
+    $('aImg3').value = d.img3||'';
     $('aDesc').value = d.desc||'';
     selectedColors = new Set(d.colors||[]);
     selectedSizes  = new Set((d.sizes||[]).map(String));
@@ -701,6 +721,8 @@ function getFormProduct(){
     visible:$('aVisible').value==='true',
     sale:$('aSale').value.trim(),
     img:$('aImg').value.trim(),
+    img2:$('aImg2').value.trim(),
+    img3:$('aImg3').value.trim(),
     desc:$('aDesc').value.trim(),
     colors:[...selectedColors].length?[...selectedColors]:['Black','White'],
     sizes:[...selectedSizes]
@@ -767,7 +789,7 @@ function editDraft(i){
   $('aMainCategory').value=p.category||'Shoes'; syncSubCats();
   $('aSubCategory').value=p.subCategory||'All Items';
   $('aVisible').value=p.visible===false?'false':'true';
-  $('aSale').value=p.sale||''; $('aImg').value=p.img||''; $('aDesc').value=p.desc||'';
+  $('aSale').value=p.sale||''; $('aImg').value=p.img||''; $('aImg2').value=p.img2||''; $('aImg3').value=p.img3||''; $('aDesc').value=p.desc||'';
   selectedColors=new Set(p.colors||[]); selectedSizes=new Set((p.sizes||[]).map(String));
   syncColorCbs(); syncSizeOptions(); updatePreview();
   $('editorTitle').textContent='Editing draft: '+p.name;
@@ -839,6 +861,8 @@ function saveProductAndDownload(){
     visible:$('aVisible').value==='true',
     sale:$('aSale').value.trim(),
     img:$('aImg').value.trim(),
+    img2:$('aImg2').value.trim(),
+    img3:$('aImg3').value.trim(),
     desc:$('aDesc').value.trim(),
     colors, sizes
   };
