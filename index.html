@@ -518,30 +518,20 @@ function buildSlideshow(prods, adsConfig){
   const ss=$('slideshow');
   let slideData = [];
 
-  if(adsConfig.length){
-    // Use ads config — only show active ads in defined order
-    const activeAds = adsConfig.filter(isAdActive);
-    activeAds.forEach(ad=>{
-      const p = prods.find(x=>x.id===ad.productId);
-      if(p && p.img) slideData.push({
-        id: p.id,
-        img: p.img,
-        name: p.name,
-        price: p.price,
-        category: p.category,
-        subCategory: p.subCategory,
-        sale: ad.label || p.sale  // use ad label if set, else product sale tag
-      });
+  // Only show ads you have chosen and scheduled — no automatic fallback
+  const activeAds = adsConfig.filter(isAdActive);
+  activeAds.forEach(ad=>{
+    const p = prods.find(x=>x.id===ad.productId);
+    if(p && p.img) slideData.push({
+      id: p.id,
+      img: p.img,
+      name: p.name,
+      price: p.price,
+      category: p.category,
+      subCategory: p.subCategory,
+      sale: ad.label || p.sale
     });
-  }
-
-  // Fallback: if no ads configured or none active, show first 6 products with images
-  if(!slideData.length){
-    slideData = prods.filter(p=>p.img).slice(0,6).map(p=>({
-      id:p.id, img:p.img, name:p.name, price:p.price,
-      category:p.category, subCategory:p.subCategory, sale:p.sale
-    }));
-  }
+  });
 
   slideProducts = slideData;
   if(!slideProducts.length){ss.style.display='none';return;}
