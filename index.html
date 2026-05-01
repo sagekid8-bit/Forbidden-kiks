@@ -261,7 +261,9 @@ function loadProducts(){
     .then(data=>{
       const raw=Array.isArray(data.products)?data.products:(Array.isArray(data)?data:[]);
       products=raw.filter(p=>p.visible!==false);
-      buildSlideshow(products);
+      // Load ads config if present
+      const adsConfig = Array.isArray(data.ads) ? data.ads : [];
+      buildSlideshow(products, adsConfig);
       renderFilters();renderChips();render();
     })
     .catch(()=>{
@@ -498,11 +500,53 @@ loadProducts();
 // ── Slideshow ─────────────────────────────────────────────────────────────────
 let slideIdx=0,slideTimer=null,slideProducts=[],touchStartX=0;
 
-function buildSlideshow(prods){
-  slideProducts=prods.filter(p=>p.img).slice(0,6);
+function isAdActive(ad){
+  const now   = new Date();
+  const today = now.toISOString().slice(0,10);
+  const hour  = now.getHours();
+  if(!ad.active) return false;
+  if(ad.startDate && ad.startDate > today) return false;
+  if(ad.endDate   && ad.endDate   < today) return false;
+  if(ad.hourTo !== 24){
+    if(hour < (ad.hourFrom||0) || hour >= (ad.hourTo||24)) return false;
+  }
+  return true;
+}
+
+function buildSlideshow(prods, adsConfig){
+  adsConfig = adsConfig || [];
   const ss=$('slideshow');
+  let slideData = [];
+
+  if(adsConfig.length){
+    // Use ads config — only show active ads in defined order
+    const activeAds = adsConfig.filter(isAdActive);
+    activeAds.forEach(ad=>{
+      const p = prods.find(x=>x.id===ad.productId);
+      if(p && p.img) slideData.push({
+        id: p.id,
+        img: p.img,
+        name: p.name,
+        price: p.price,
+        category: p.category,
+        subCategory: p.subCategory,
+        sale: ad.label || p.sale  // use ad label if set, else product sale tag
+      });
+    });
+  }
+
+  // Fallback: if no ads configured or none active, show first 6 products with images
+  if(!slideData.length){
+    slideData = prods.filter(p=>p.img).slice(0,6).map(p=>({
+      id:p.id, img:p.img, name:p.name, price:p.price,
+      category:p.category, subCategory:p.subCategory, sale:p.sale
+    }));
+  }
+
+  slideProducts = slideData;
   if(!slideProducts.length){ss.style.display='none';return;}
   ss.style.display='block';
+
   $('slidesTrack').innerHTML=slideProducts.map((p,i)=>
     `<div class="slide" onclick="jumpToProduct('${p.id}')">
       <img src="${p.img}" alt="${p.name}" onerror="this.parentElement.style.display='none'">
@@ -511,14 +555,16 @@ function buildSlideshow(prods){
         ${p.sale?`<div class="slide-badge">${p.sale}</div>`:''}
         <div class="slide-name">${p.name}</div>
         <div class="slide-price">R${p.price}</div>
-        <div class="slide-cat">${p.category}${p.subCategory&&p.subCategory!=='All Items'?' · '+p.subCategory:''}</div>
+        <div class="slide-cat">${p.category||''}${p.subCategory&&p.subCategory!=='All Items'?' · '+p.subCategory:''}</div>
       </div>
     </div>`).join('');
+
   $('slideDots').innerHTML=slideProducts.map((_,i)=>
     `<button class="slide-dot ${i===0?'on':''}" onclick="goSlide(${i})"></button>`).join('');
   goSlide(0);
   clearInterval(slideTimer);
   slideTimer=setInterval(()=>goSlide(slideIdx+1),3500);
+
   $('slidesTrack').addEventListener('touchstart',e=>{touchStartX=e.touches[0].clientX;},{passive:true});
   $('slidesTrack').addEventListener('touchend',e=>{
     const diff=touchStartX-e.changedTouches[0].clientX;
