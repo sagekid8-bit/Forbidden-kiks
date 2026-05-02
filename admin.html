@@ -187,6 +187,20 @@ select,input[type=number],input[type=text],textarea{width:100%;background:#14112
               <input id="aSale" type="text" placeholder="e.g. 20% OFF" oninput="updatePreview()">
             </div>
           </div>
+          <div class="row2">
+            <div class="field"><label class="label">Stock Status</label>
+              <select id="aSoldOut" onchange="updatePreview()">
+                <option value="false">✅ In Stock</option>
+                <option value="true">❌ Sold Out</option>
+              </select>
+            </div>
+            <div class="field"><label class="label">Popular Badge</label>
+              <select id="aPopular" onchange="updatePreview()">
+                <option value="false">No badge</option>
+                <option value="true">🔥 Mark as Popular</option>
+              </select>
+            </div>
+          </div>
 
           <div class="field"><label class="label">Image 1 — Main / Front view</label>
             <input id="aImg" type="text" placeholder="https://..." oninput="updatePreview()">
@@ -636,6 +650,8 @@ function applyToForm(p){
   $('aMainCategory').value=p.category||'Shoes'; syncSubCats();
   $('aSubCategory').value=p.subCategory||'All Items';
   $('aVisible').value=p.visible===false?'false':'true';
+  $('aSoldOut').value=p.soldOut===true?'true':'false';
+  $('aPopular').value=p.popular===true?'true':'false';
   $('aSale').value=p.sale||''; $('aImg').value=p.img||''; $('aImg2').value=p.img2||''; $('aImg3').value=p.img3||''; $('aDesc').value=p.desc||'';
   selectedColors=new Set(Array.isArray(p.colors)?p.colors:[]);
   selectedSizes=new Set(Array.isArray(p.sizes)?p.sizes.map(String):[]);
@@ -644,7 +660,7 @@ function applyToForm(p){
 function clearForm(){
   editingId=null; editingDraftId=null;
   $('aName').value=''; $('aPrice').value=''; $('aMainCategory').value='Shoes'; syncSubCats();
-  $('aSubCategory').value='Sneakers'; $('aVisible').value='true'; $('aSale').value=''; $('aImg').value=''; $('aDesc').value='';
+  $('aSubCategory').value='Sneakers'; $('aVisible').value='true'; $('aSoldOut').value='false'; $('aPopular').value='false'; $('aSale').value=''; $('aImg').value=''; $('aDesc').value='';
   selectedColors.clear(); selectedSizes.clear(); syncColorCbs(); syncSizeOptions(); updatePreview();
   $('editorTitle').textContent='New Product';
   $('editingBadge').classList.add('hidden');
@@ -772,7 +788,7 @@ function renderProductList(){
         ${p.img?`<img class="prodThumb" src="${p.img}" onerror="this.style.display='none'">`:''}
         <div class="prodInfo">
           <div class="prodName">${p.name}</div>
-          <div class="prodMeta">${p.category}${p.subCategory&&p.subCategory!=='All Items'?' · '+p.subCategory:''} · R${p.price}</div>
+          <div class="prodMeta">${p.category}${p.subCategory&&p.subCategory!=='All Items'?' · '+p.subCategory:''} · R${p.price}${p.soldOut?' · <span style="color:#ef4444">Sold Out</span>':''}${p.popular?' · <span style="color:#ff8a3d">🔥 Popular</span>':''}</div>
           <div class="prodMeta">Colors: ${(p.colors||[]).slice(0,4).join(', ')}${(p.colors||[]).length>4?' …':''}</div>
           <div class="prodMeta">Sizes: ${(p.sizes||[]).join(', ')||'None'}</div>
         </div>
@@ -798,7 +814,7 @@ function saveFormDraft(){
   const data = {
     name:$('aName').value, price:$('aPrice').value,
     category:$('aMainCategory').value, subCategory:$('aSubCategory').value,
-    visible:$('aVisible').value, sale:$('aSale').value,
+    visible:$('aVisible').value, soldOut:$('aSoldOut').value, popular:$('aPopular').value, sale:$('aSale').value,
     img:$('aImg').value, img2:$('aImg2').value, img3:$('aImg3').value, desc:$('aDesc').value,
     colors:[...selectedColors], sizes:[...selectedSizes],
     editingId, editingDraftId
@@ -819,6 +835,8 @@ function restoreFormDraft(){
     syncSubCats();
     $('aSubCategory').value = d.subCategory||'All Items';
     $('aVisible').value = d.visible||'true';
+    $('aSoldOut').value = d.soldOut||'false';
+    $('aPopular').value = d.popular||'false';
     $('aSale').value = d.sale||'';
     $('aImg').value = d.img||'';
     $('aImg2').value = d.img2||'';
@@ -854,7 +872,9 @@ function getFormProduct(){
     img3:$('aImg3').value.trim(),
     desc:$('aDesc').value.trim(),
     colors:[...selectedColors].length?[...selectedColors]:['Black','White'],
-    sizes:[...selectedSizes]
+    sizes:[...selectedSizes],
+    soldOut:$('aSoldOut').value==='true',
+    popular:$('aPopular').value==='true'
   };
 }
 
@@ -918,6 +938,8 @@ function editDraft(i){
   $('aMainCategory').value=p.category||'Shoes'; syncSubCats();
   $('aSubCategory').value=p.subCategory||'All Items';
   $('aVisible').value=p.visible===false?'false':'true';
+  $('aSoldOut').value=p.soldOut===true?'true':'false';
+  $('aPopular').value=p.popular===true?'true':'false';
   $('aSale').value=p.sale||''; $('aImg').value=p.img||''; $('aImg2').value=p.img2||''; $('aImg3').value=p.img3||''; $('aDesc').value=p.desc||'';
   selectedColors=new Set(p.colors||[]); selectedSizes=new Set((p.sizes||[]).map(String));
   syncColorCbs(); syncSizeOptions(); updatePreview();
