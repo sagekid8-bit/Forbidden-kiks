@@ -100,6 +100,9 @@ select,input[type=number],input[type=text],textarea{width:100%;background:#14112
 .draftCard{border:1px solid rgba(139,92,246,.3);border-radius:14px;padding:12px;background:rgba(139,92,246,.06);margin-bottom:8px}
 .draftCard .draftName{font-weight:900;font-size:.95rem}
 .draftCard .draftMeta{color:var(--muted);font-size:.82rem;margin-top:2px}
+.catChip{display:flex;align-items:center;gap:6px;padding:8px;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.02);cursor:pointer;font-size:.82rem;transition:background .15s,border-color .15s}
+.catChip.on{background:rgba(255,77,125,.15);border-color:var(--a);color:#fff}
+.catChip input{accent-color:var(--a)}
 @media(min-width:900px){.layout{grid-template-columns:1fr 340px}}
 @media(max-width:700px){.row2{grid-template-columns:1fr}.colorGrid{grid-template-columns:repeat(2,1fr)}.sizeGrid{grid-template-columns:repeat(4,1fr)}}
 </style>
@@ -164,16 +167,20 @@ select,input[type=number],input[type=text],textarea{width:100%;background:#14112
             </div>
           </div>
 
-          <div class="row2">
-            <div class="field"><label class="label">Main Category</label>
-              <select id="aMainCategory" onchange="syncSubCats();syncSizeOptions();updatePreview()">
-                <option>Shoes</option><option>Men</option><option>Women</option><option>Kids</option>
-                <option>Accessories</option><option>New In</option><option>Trending</option><option>Sale</option><option>All Items</option>
-              </select>
-            </div>
-            <div class="field"><label class="label">Sub Category</label>
-              <select id="aSubCategory" onchange="syncSizeOptions();updatePreview()"></select>
-            </div>
+          <div class="field">
+            <label class="label">Categories <span style="color:var(--muted);font-size:.75rem;text-transform:none;letter-spacing:0">(pick all that apply)</span></label>
+            <div id="catGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;border:1px solid var(--line);border-radius:14px;padding:10px;background:rgba(0,0,0,.2)"></div>
+          </div>
+          <div class="field">
+            <label class="label">Main Category <span style="color:var(--muted);font-size:.75rem">(controls sizes)</span></label>
+            <select id="aMainCategory" onchange="syncSubCats();syncSizeOptions();updatePreview()">
+              <option>Shoes</option><option>Men</option><option>Women</option><option>Kids</option>
+              <option>Accessories</option><option>New In</option><option>Trending</option><option>Sale</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="label">Sub Categories <span style="color:var(--muted);font-size:.75rem;text-transform:none;letter-spacing:0">(tick all that apply)</span></label>
+            <div id="subCatGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;border:1px solid var(--line);border-radius:14px;padding:10px;background:rgba(0,0,0,.2)"></div>
           </div>
 
           <div class="row2">
@@ -199,6 +206,15 @@ select,input[type=number],input[type=text],textarea{width:100%;background:#14112
                 <option value="false">No badge</option>
                 <option value="true">🔥 Mark as Popular</option>
               </select>
+            </div>
+          </div>
+
+          <div class="row2">
+            <div class="field"><label class="label">Stock Count <span style="color:var(--muted);font-size:.75rem">(optional)</span></label>
+              <input id="aStock" type="number" placeholder="e.g. 5 — shows limited stock warning" oninput="updatePreview()">
+            </div>
+            <div class="field" style="display:flex;align-items:flex-end">
+              <div class="muted" style="font-size:.8rem;line-height:1.4">Leave empty = unlimited stock. Set a number to show "Only X left!"</div>
             </div>
           </div>
 
@@ -519,7 +535,8 @@ function login(){
   $('loginBox').classList.add('hidden');
   $('adminBox').classList.remove('hidden');
   buildColorGrid();
-  syncSubCats();
+  buildCatGrid();
+  syncSubCats(); // builds subcat grid
   syncSizeOptions();
   restoreFormDraft();
   updateDraftTabCount();
@@ -560,6 +577,31 @@ function buildColorGrid(){
     </label>`).join('');
 }
 function toggleColor(name,on){ on?selectedColors.add(name):selectedColors.delete(name); updatePreview(); }
+
+// ── Category grid (multi-select) ─────────────────────────────────────────────
+const ALL_CATS = ['Shoes','Men','Women','Kids','Accessories','New In','Trending','Sale'];
+let selectedCats = new Set();
+let selectedSubCats = new Set();
+
+function buildCatGrid(){
+  const g = $('catGrid'); if(!g) return;
+  g.innerHTML = ALL_CATS.map(c=>`
+    <label class="catChip ${selectedCats.has(c)?'on':''}">
+      <input type="checkbox" value="${c}" ${selectedCats.has(c)?'checked':''} onchange="toggleCat('${c}',this.checked)">
+      ${c}
+    </label>`).join('');
+}
+function toggleCat(cat, on){
+  on ? selectedCats.add(cat) : selectedCats.delete(cat);
+  buildCatGrid();
+  // Sync main category select to first selected
+  const first = [...selectedCats][0];
+  if(first) $('aMainCategory').value = first;
+  syncSubCats(); syncSizeOptions(); updatePreview();
+}
+function syncCatCheckboxes(){
+  buildCatGrid();
+}
 function selectAllColors(){ selectedColors=new Set(COLOR_OPTIONS.map(x=>x[0])); syncColorCbs(); updatePreview(); }
 function clearColors(){ selectedColors.clear(); syncColorCbs(); updatePreview(); }
 function syncColorCbs(){ $('colorGrid').querySelectorAll('input').forEach(i=>i.checked=selectedColors.has(i.value)); }
@@ -567,10 +609,20 @@ function syncColorCbs(){ $('colorGrid').querySelectorAll('input').forEach(i=>i.c
 // ── Sub categories ────────────────────────────────────────────────────────────
 function syncSubCats(){
   const main=$('aMainCategory').value;
-  const opts=SUB_CATS[main]||SUB_CATS.default;
-  const cur=$('aSubCategory').value;
-  $('aSubCategory').innerHTML=opts.map(o=>`<option>${o}</option>`).join('');
-  if(opts.includes(cur)) $('aSubCategory').value=cur;
+  const opts=(SUB_CATS[main]||SUB_CATS.default).filter(o=>o!=='All Items');
+  const g=$('subCatGrid'); if(!g) return;
+  g.innerHTML=opts.map(o=>`
+    <label class="catChip ${selectedSubCats.has(o)?'on':''}">
+      <input type="checkbox" value="${o}" ${selectedSubCats.has(o)?'checked':''} onchange="toggleSubCat('${o}',this.checked)">
+      ${o}
+    </label>`).join('');
+}
+function toggleSubCat(sub, on){
+  on ? selectedSubCats.add(sub) : selectedSubCats.delete(sub);
+  syncSubCats(); updatePreview();
+}
+function getFirstSubCat(){
+  return [...selectedSubCats][0] || 'All Items';
 }
 
 // ── Sizes ─────────────────────────────────────────────────────────────────────
@@ -599,7 +651,7 @@ function getSizes(cat, sub){
 }
 function syncSizeOptions(){
   const cat=$('aMainCategory').value;
-  const sub=$('aSubCategory').value||'All Items';
+  const sub=getFirstSubCat();
   const sizes=getSizes(cat,sub);
   if(cat==='Shoes'||sub==='Shoes') $('sizeLabel').textContent='Shoe Sizes';
   else if(sub==='Bottoms') $('sizeLabel').textContent='Bottom Sizes (waist)';
@@ -647,21 +699,27 @@ function updatePreview(){
 // ── Form ──────────────────────────────────────────────────────────────────────
 function applyToForm(p){
   $('aName').value=p.name||''; $('aPrice').value=p.price??'';
-  $('aMainCategory').value=p.category||'Shoes'; syncSubCats();
-  $('aSubCategory').value=p.subCategory||'All Items';
+  $('aMainCategory').value=p.category||'Shoes';
+  selectedSubCats=new Set(Array.isArray(p.subCategories)?p.subCategories:(p.subCategory&&p.subCategory!=='All Items'?[p.subCategory]:[])); syncSubCats();
   $('aVisible').value=p.visible===false?'false':'true';
   $('aSoldOut').value=p.soldOut===true?'true':'false';
   $('aPopular').value=p.popular===true?'true':'false';
   $('aSale').value=p.sale||''; $('aImg').value=p.img||''; $('aImg2').value=p.img2||''; $('aImg3').value=p.img3||''; $('aDesc').value=p.desc||'';
+  $('aStock').value=p.stock??'';
   selectedColors=new Set(Array.isArray(p.colors)?p.colors:[]);
   selectedSizes=new Set(Array.isArray(p.sizes)?p.sizes.map(String):[]);
-  syncColorCbs(); syncSizeOptions(); updatePreview();
+  // Restore categories
+  selectedCats=new Set(Array.isArray(p.categories)?p.categories:(p.category?[p.category]:[]));
+  syncColorCbs(); syncSizeOptions(); buildCatGrid(); updatePreview();
 }
 function clearForm(){
   editingId=null; editingDraftId=null;
   $('aName').value=''; $('aPrice').value=''; $('aMainCategory').value='Shoes'; syncSubCats();
-  $('aSubCategory').value='Sneakers'; $('aVisible').value='true'; $('aSoldOut').value='false'; $('aPopular').value='false'; $('aSale').value=''; $('aImg').value=''; $('aDesc').value='';
-  selectedColors.clear(); selectedSizes.clear(); syncColorCbs(); syncSizeOptions(); updatePreview();
+  selectedSubCats.clear(); $('aVisible').value='true'; $('aSoldOut').value='false';
+  $('aPopular').value='false'; $('aSale').value=''; $('aImg').value=''; $('aImg2').value='';
+  $('aImg3').value=''; $('aDesc').value=''; $('aStock').value='';
+  selectedColors.clear(); selectedSizes.clear(); selectedCats.clear();
+  syncColorCbs(); syncSizeOptions(); buildCatGrid(); updatePreview();
   $('editorTitle').textContent='New Product';
   $('editingBadge').classList.add('hidden');
   $('cancelEditBtn').classList.add('hidden');
@@ -682,12 +740,19 @@ function saveProduct(){
   let sizes=[...selectedSizes];
   if(!sizes.length && getSizes(cat).length) sizes=getSizes(cat);
 
+  const cats=[...selectedCats];
+  const stockVal=parseInt($('aStock').value);
   const p={
     id: editingId||uid(),
     name, price, category:cat,
-    subCategory:$('aSubCategory').value||'All Items',
+    subCategory:getFirstSubCat(),
+    subCategories:[...selectedSubCats],
+    categories: cats.length ? cats : [cat],
     visible:$('aVisible').value==='true',
     sale:$('aSale').value.trim(),
+    soldOut:$('aSoldOut').value==='true',
+    popular:$('aPopular').value==='true',
+    stock: isNaN(stockVal) ? null : stockVal,
     img:$('aImg').value.trim(),
     img2:$('aImg2').value.trim(),
     img3:$('aImg3').value.trim(),
@@ -715,11 +780,12 @@ function editProduct(id){
   $('editorTitle').textContent='Editing: '+p.name;
   $('editingBadge').classList.remove('hidden');
   $('cancelEditBtn').classList.remove('hidden');
+  // Switch to editor tab cleanly
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.tab')[0].classList.add('active');
-  $('tabEditor').classList.remove('hidden'); 
-  $('tabProducts').classList.add('hidden');
-  $('tabDrafts').classList.add('hidden');
+  document.querySelector('.tab[onclick*="editor"]').classList.add('active');
+  ['tabEditor','tabDrafts','tabProducts','tabAds'].forEach(id=>{
+    $(id).classList.toggle('hidden', id!=='tabEditor');
+  });
   window.scrollTo({top:0,behavior:'smooth'});
 }
 function toggleVisible(id){
@@ -813,8 +879,9 @@ function dragEnd(){ dragSrcIdx=null; document.querySelectorAll('.prodCard').forE
 function saveFormDraft(){
   const data = {
     name:$('aName').value, price:$('aPrice').value,
-    category:$('aMainCategory').value, subCategory:$('aSubCategory').value,
-    visible:$('aVisible').value, soldOut:$('aSoldOut').value, popular:$('aPopular').value, sale:$('aSale').value,
+    category:$('aMainCategory').value, subCategory:getFirstSubCat(), subCategories:[...selectedSubCats],
+    visible:$('aVisible').value, soldOut:$('aSoldOut').value, popular:$('aPopular').value, sale:$('aSale').value, stock:$('aStock').value,
+    categories:[...selectedCats],
     img:$('aImg').value, img2:$('aImg2').value, img3:$('aImg3').value, desc:$('aDesc').value,
     colors:[...selectedColors], sizes:[...selectedSizes],
     editingId, editingDraftId
@@ -832,12 +899,14 @@ function restoreFormDraft(){
     $('aName').value = d.name||'';
     $('aPrice').value = d.price||'';
     $('aMainCategory').value = d.category||'Shoes';
-    syncSubCats();
+    selectedSubCats=new Set(Array.isArray(d.subCategories)?d.subCategories:(d.subCategory&&d.subCategory!=='All Items'?[d.subCategory]:[])); syncSubCats();
     $('aSubCategory').value = d.subCategory||'All Items';
     $('aVisible').value = d.visible||'true';
     $('aSoldOut').value = d.soldOut||'false';
     $('aPopular').value = d.popular||'false';
     $('aSale').value = d.sale||'';
+    $('aStock').value = d.stock||'';
+    selectedCats = new Set(Array.isArray(d.categories)?d.categories:(d.fields?.category?[d.fields.category]:[]));
     $('aImg').value = d.img||'';
     $('aImg2').value = d.img2||'';
     $('aImg3').value = d.img3||'';
@@ -846,7 +915,7 @@ function restoreFormDraft(){
     selectedSizes  = new Set((d.sizes||[]).map(String));
     editingId      = d.editingId||null;
     editingDraftId = d.editingDraftId||null;
-    syncColorCbs(); syncSizeOptions();
+    syncColorCbs(); syncSizeOptions(); buildCatGrid();
     if(editingId||editingDraftId){
       $('editorTitle').textContent = 'Editing: '+(d.name||'product');
       $('editingBadge').classList.remove('hidden');
@@ -864,7 +933,8 @@ function getFormProduct(){
     name:$('aName').value.trim(),
     price:parseFloat($('aPrice').value)||0,
     category:$('aMainCategory').value,
-    subCategory:$('aSubCategory').value||'All Items',
+    subCategory:getFirstSubCat(),
+    subCategories:[...selectedSubCats],
     visible:$('aVisible').value==='true',
     sale:$('aSale').value.trim(),
     img:$('aImg').value.trim(),
@@ -935,8 +1005,8 @@ function editDraft(i){
   editingDraftId = p.id;
   editingId = null;
   $('aName').value=p.name||''; $('aPrice').value=p.price||'';
-  $('aMainCategory').value=p.category||'Shoes'; syncSubCats();
-  $('aSubCategory').value=p.subCategory||'All Items';
+  $('aMainCategory').value=p.category||'Shoes';
+  selectedSubCats=new Set(Array.isArray(p.subCategories)?p.subCategories:(p.subCategory&&p.subCategory!=='All Items'?[p.subCategory]:[])); syncSubCats();
   $('aVisible').value=p.visible===false?'false':'true';
   $('aSoldOut').value=p.soldOut===true?'true':'false';
   $('aPopular').value=p.popular===true?'true':'false';
@@ -948,10 +1018,10 @@ function editDraft(i){
   $('cancelEditBtn').classList.remove('hidden');
   // Switch to editor tab
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.tab')[0].classList.add('active');
-  $('tabEditor').classList.remove('hidden');
-  $('tabDrafts').classList.add('hidden');
-  $('tabProducts').classList.add('hidden');
+  document.querySelector('.tab[onclick*="editor"]').classList.add('active');
+  ['tabEditor','tabDrafts','tabProducts','tabAds'].forEach(id=>{
+    $(id).classList.toggle('hidden', id!=='tabEditor');
+  });
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
@@ -1005,12 +1075,19 @@ function saveProductAndDownload(){
   let sizes=[...selectedSizes];
   if(!sizes.length && getSizes(cat).length) sizes=getSizes(cat);
 
+  const cats=[...selectedCats];
+  const stockVal=parseInt($('aStock').value);
   const p={
     id: editingId||uid(),
     name, price, category:cat,
-    subCategory:$('aSubCategory').value||'All Items',
+    subCategory:getFirstSubCat(),
+    subCategories:[...selectedSubCats],
+    categories: cats.length ? cats : [cat],
     visible:$('aVisible').value==='true',
     sale:$('aSale').value.trim(),
+    soldOut:$('aSoldOut').value==='true',
+    popular:$('aPopular').value==='true',
+    stock: isNaN(stockVal) ? null : stockVal,
     img:$('aImg').value.trim(),
     img2:$('aImg2').value.trim(),
     img3:$('aImg3').value.trim(),
