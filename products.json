@@ -161,29 +161,6 @@
       ]
     },
     {
-      "id": "p_mobhfzr8_avw1w",
-      "name": "Air Force 1",
-      "price": 1100,
-      "category": "Shoes",
-      "subCategory": "Sneakers",
-      "visible": true,
-      "sale": "CLASSIC DROP ✨",
-      "img": "https://i.ibb.co/RpPynzgK/download.webp",
-      "desc": "Clean, fresh, and always in style🔥",
-      "colors": [
-        "White",
-        "Black",
-        "Customized"
-      ],
-      "sizes": [
-        "3",
-        "4",
-        "5",
-        "6",
-        "7"
-      ]
-    },
-    {
       "id": "p_mobbnmkj_9yfn9",
       "name": "Lacoste Audyssor Trail",
       "price": 1350,
@@ -208,36 +185,6 @@
         "5",
         "6",
         "7"
-      ]
-    },
-    {
-      "id": "p_mobh2u64_ht5i3",
-      "name": "Adidas Campus",
-      "price": 1200,
-      "category": "Shoes",
-      "subCategory": "Sneakers",
-      "visible": true,
-      "sale": "CLASSIC DROP ✨",
-      "img": "https://i.postimg.cc/TYKnnLNW/Campus_00s_Shoes_Black_HQ6638_01_standard.jpg",
-      "desc": "Fresh everyday Flex🤘",
-      "colors": [
-        "Customized",
-        "Black",
-        "White",
-        "Brown",
-        "Grey",
-        "Pink",
-        "Green",
-        "Blue",
-        "Red"
-      ],
-      "sizes": [
-        "3",
-        "4",
-        "5",
-        "6",
-        "7",
-        "8"
       ]
     },
     {
@@ -293,34 +240,6 @@
         "7",
         "8"
       ]
-    },
-    {
-      "id": "p_mol4jm0m_sd93l",
-      "name": "All Star Converse",
-      "price": 800,
-      "category": "Shoes",
-      "subCategory": "Sneakers",
-      "visible": true,
-      "sale": "CLASSIC DROP ✨",
-      "img": "",
-      "desc": "Timeless canvas vibe🤘",
-      "colors": [
-        "White",
-        "Black",
-        "Navy",
-        "Red",
-        "Blue",
-        "Charcoal"
-      ],
-      "sizes": [
-        "3",
-        "4",
-        "5",
-        "6",
-        "7"
-      ],
-      "img2": "",
-      "img3": ""
     },
     {
       "id": "p_mo9ak8og_1i7jn",
@@ -402,42 +321,11 @@
       ]
     },
     {
-      "id": "p_mojzdvdw_quuz8",
-      "name": "Addidas Campus",
-      "price": 1100,
+      "id": "p_morcodlg_zhyd2",
+      "name": "Air More Uptempo Slide",
+      "price": 900,
       "category": "Shoes",
       "subCategory": "Sneakers",
-      "visible": true,
-      "sale": "Best Drip🔥",
-      "img": "",
-      "desc": "Walk the walk😎",
-      "colors": [
-        "Black",
-        "White",
-        "Grey",
-        "Blue",
-        "Silver",
-        "Customized",
-        "Charcoal",
-        "Brown",
-        "Tan",
-        "Navy",
-        "Red"
-      ],
-      "sizes": [
-        "2",
-        "3",
-        "4",
-        "5",
-        "6"
-      ]
-    },
-    {
-      "id": "p_mol4ozp5_huc0h",
-      "name": "Air More Uptempo Slide",
-      "price": 1,
-      "category": "Shoes",
-      "subCategory": "Slides",
       "visible": true,
       "sale": "",
       "img": "",
@@ -455,20 +343,22 @@
         "Charcoal"
       ],
       "sizes": [
-        "1",
-        "2",
         "3",
         "4",
         "5",
         "6",
         "7",
-        "8"
-      ]
+        "8",
+        "1",
+        "2"
+      ],
+      "soldOut": false,
+      "popular": false
     },
     {
-      "id": "p_mol4ruyj_vwla3",
+      "id": "p_morcpxb1_hpo5a",
       "name": "All Star [Run Star Hike]",
-      "price": 1,
+      "price": 1400,
       "category": "Shoes",
       "subCategory": "Boots",
       "visible": true,
@@ -492,12 +382,14 @@
         "6",
         "7",
         "8"
-      ]
+      ],
+      "soldOut": false,
+      "popular": false
     },
     {
-      "id": "p_mol4ybgu_pjw3p",
+      "id": "p_morcr1k2_sxoze",
       "name": "Nike Air Max 95",
-      "price": 1,
+      "price": 1400,
       "category": "Shoes",
       "subCategory": "Sneakers",
       "visible": true,
@@ -519,7 +411,9 @@
         "6",
         "7",
         "8"
-      ]
+      ],
+      "soldOut": false,
+      "popular": false
     },
     {
       "id": "p_mol4ys63_5pfqx",
@@ -550,9 +444,9 @@
       ]
     },
     {
-      "id": "p_mol51kss_f0cat",
+      "id": "p_morcwo5v_nkiqm",
       "name": "Converse [Chuck 70 Plus]",
-      "price": 1,
+      "price": 1150,
       "category": "Shoes",
       "subCategory": "Boots",
       "visible": true,
@@ -574,12 +468,14 @@
         "6",
         "7",
         "8"
-      ]
+      ],
+      "soldOut": false,
+      "popular": false
     },
     {
-      "id": "p_mol540os_blmtv",
+      "id": "p_morcvpn0_15nn1",
       "name": "Puma Suede XL",
-      "price": 1,
+      "price": 1400,
       "category": "Shoes",
       "subCategory": "Sneakers",
       "visible": true,
@@ -593,20 +489,20 @@
         "Silver"
       ],
       "sizes": [
-        "1",
-        "2",
         "3",
         "4",
         "5",
         "6",
         "7",
         "8"
-      ]
+      ],
+      "soldOut": false,
+      "popular": false
     },
     {
-      "id": "p_mol574tb_lfad0",
+      "id": "p_mord3fan_5carz",
       "name": "Air More Uptempo",
-      "price": 1,
+      "price": 1700,
       "category": "Shoes",
       "subCategory": "Sneakers",
       "visible": true,
@@ -628,12 +524,14 @@
         "6",
         "7",
         "8"
-      ]
+      ],
+      "soldOut": false,
+      "popular": false
     },
     {
-      "id": "p_mol5ai89_a7ala",
+      "id": "p_morcy1ir_u9zha",
       "name": "Nike Dunk",
-      "price": 1,
+      "price": 1300,
       "category": "Shoes",
       "subCategory": "Sneakers",
       "visible": true,
@@ -655,12 +553,14 @@
         "6",
         "7",
         "8"
-      ]
+      ],
+      "soldOut": false,
+      "popular": false
     },
     {
-      "id": "p_mol5dkqh_ch05a",
+      "id": "p_morczunj_ct9fy",
       "name": "Puma Mayze",
-      "price": 1,
+      "price": 1400,
       "category": "Shoes",
       "subCategory": "Sneakers",
       "visible": true,
@@ -682,12 +582,14 @@
         "6",
         "7",
         "8"
-      ]
+      ],
+      "soldOut": false,
+      "popular": false
     },
     {
-      "id": "p_mol5tcag_tiij9",
+      "id": "p_morcyywm_r4nqd",
       "name": "Nike Air Jordan 1",
-      "price": 1,
+      "price": 1400,
       "category": "Shoes",
       "subCategory": "Sneakers",
       "visible": true,
@@ -710,7 +612,100 @@
         "6",
         "7",
         "8"
-      ]
+      ],
+      "soldOut": false,
+      "popular": false
+    },
+    {
+      "id": "p_mopqgd8y_dri99",
+      "name": "Adidas Campus",
+      "price": 1200,
+      "category": "Shoes",
+      "subCategory": "Sneakers",
+      "visible": true,
+      "sale": "CLASSIC DROP ✨",
+      "img": "https://i.ibb.co/F44Ns2Bx/images.jpg",
+      "img2": "",
+      "img3": "",
+      "desc": "Fresh everyday Flex🤘",
+      "colors": [
+        "Customized",
+        "Black",
+        "White",
+        "Brown",
+        "Grey",
+        "Pink",
+        "Green",
+        "Blue",
+        "Red"
+      ],
+      "sizes": [
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8"
+      ],
+      "soldOut": false,
+      "popular": true
+    },
+    {
+      "id": "p_mopqxf7q_2nq2s",
+      "name": "All Star Converse",
+      "price": 800,
+      "category": "Shoes",
+      "subCategory": "Boots",
+      "visible": true,
+      "sale": "CLASSIC DROP ✨",
+      "img": "https://i.ibb.co/qFdTP5gV/206812611-800-1067.png",
+      "img2": "",
+      "img3": "",
+      "desc": "Timeless canvas vibe🤘",
+      "colors": [
+        "White",
+        "Black",
+        "Navy",
+        "Red",
+        "Blue",
+        "Charcoal"
+      ],
+      "sizes": [
+        "3",
+        "4",
+        "5",
+        "6",
+        "7"
+      ],
+      "soldOut": false,
+      "popular": false
+    },
+    {
+      "id": "p_mopu3189_j9311",
+      "name": "Air Force 1",
+      "price": 1100,
+      "category": "Shoes",
+      "subCategory": "Sneakers",
+      "visible": true,
+      "sale": "CLASSIC DROP ✨",
+      "img": "https://i.ibb.co/6J7TX2YX/images-5.jpg",
+      "img2": "",
+      "img3": "",
+      "desc": "Clean, fresh, and always in style🔥",
+      "colors": [
+        "White",
+        "Black",
+        "Customized"
+      ],
+      "sizes": [
+        "3",
+        "4",
+        "5",
+        "6",
+        "7"
+      ],
+      "soldOut": false,
+      "popular": false
     }
   ]
 }
