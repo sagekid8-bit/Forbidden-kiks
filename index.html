@@ -100,55 +100,22 @@ select,input[type=number],input[type=text],textarea{width:100%;background:#14112
 @media(max-width:520px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.row2{grid-template-columns:1fr}}
 
 /* ── Product Slideshow ── */
-.slideshow{position:relative;overflow:hidden;width:100%;background:#000}
-.slides-track{display:flex;will-change:transform;transition:transform .8s cubic-bezier(.77,0,.175,1)}
-.slide{flex:0 0 100%;position:relative;cursor:pointer;user-select:none;overflow:hidden}
-.slide-img-wrap{position:relative;width:100%;aspect-ratio:16/9;overflow:hidden}
-.slide-img-wrap img{width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.08);transition:transform 6s ease-out;filter:brightness(.75)}
-.slide.is-active .slide-img-wrap img{transform:scale(1)}
-.slide-overlay{position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,0,0,.65) 0%,transparent 60%),linear-gradient(to top,rgba(0,0,0,.9) 0%,rgba(0,0,0,.3) 40%,transparent 100%)}
-.slide-info{position:absolute;bottom:0;left:0;right:0;padding:20px 18px;transform:translateY(12px);opacity:0;transition:transform .7s ease .3s,opacity .7s ease .3s}
-.slide.is-active .slide-info{transform:translateY(0);opacity:1}
-.slide-badge{display:inline-block;padding:5px 12px;border-radius:999px;background:linear-gradient(135deg,var(--a),var(--b));font-size:.72rem;font-weight:900;margin-bottom:8px;letter-spacing:.5px;text-transform:uppercase;box-shadow:0 4px 16px rgba(255,77,125,.5)}
-.slide-name{font-size:clamp(1.3rem,5vw,2rem);font-weight:900;line-height:1.1;margin-bottom:6px;text-shadow:0 2px 12px rgba(0,0,0,.8)}
-.slide-price{font-size:1.1rem;font-weight:900;color:var(--green);text-shadow:0 1px 6px rgba(0,0,0,.6)}
-.slide-cat{font-size:.8rem;color:rgba(255,255,255,.7);margin-top:4px;letter-spacing:.5px}
-.slide-cta{display:inline-block;margin-top:10px;padding:8px 18px;border-radius:999px;background:rgba(255,255,255,.15);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.3);font-size:.82rem;font-weight:800;letter-spacing:.5px}
-.slide-dots{display:flex;justify-content:center;align-items:center;gap:8px;padding:10px 0 12px;background:linear-gradient(to bottom,rgba(0,0,0,.6),#07050c)}
-.slide-dot{width:6px;height:6px;border-radius:999px;background:rgba(255,255,255,.3);border:0;cursor:pointer;transition:all .4s cubic-bezier(.4,0,.2,1);padding:0}
-.slide-dot.on{background:var(--a);width:24px;box-shadow:0 0 8px rgba(255,77,125,.6)}
-.slide-prev,.slide-next{position:absolute;top:45%;transform:translateY(-50%);z-index:5;border:0;background:rgba(0,0,0,.35);color:#fff;width:40px;height:40px;border-radius:50%;font-size:1.3rem;cursor:pointer;backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.2);transition:background .2s,transform .2s}
-.slide-prev:active,.slide-next:active{transform:translateY(-50%) scale(.92)}
-.slide-prev{left:10px}.slide-next{right:10px}
-.slide-progress{position:absolute;bottom:0;left:0;height:2px;background:linear-gradient(90deg,var(--a),var(--b));width:0;transition:width linear;z-index:6}
+.slideshow{position:relative;overflow:hidden;width:100%;background:#07050c;border-bottom:1px solid var(--line)}
+.slides-track{display:flex;transition:transform .5s cubic-bezier(.4,0,.2,1);will-change:transform}
+.slide{flex:0 0 100%;position:relative;cursor:pointer;user-select:none}
+.slide img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block;opacity:.85}
+.slide-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.82) 0%,rgba(0,0,0,.3) 45%,transparent 100%)}
+.slide-info{position:absolute;bottom:0;left:0;right:0;padding:16px}
+.slide-badge{display:inline-block;padding:4px 10px;border-radius:999px;background:linear-gradient(135deg,var(--a),var(--b));font-size:.72rem;font-weight:900;margin-bottom:6px}
+.slide-name{font-size:clamp(1.1rem,4vw,1.6rem);font-weight:900;line-height:1.1;margin-bottom:4px;text-shadow:0 2px 8px rgba(0,0,0,.6)}
+.slide-price{font-size:1rem;font-weight:900;color:var(--green)}
+.slide-cat{font-size:.82rem;color:var(--muted);margin-top:2px}
+.slide-dots{display:flex;justify-content:center;gap:6px;padding:10px 0 12px;background:#07050c}
+.slide-dot{width:6px;height:6px;border-radius:999px;background:rgba(255,255,255,.25);border:0;cursor:pointer;transition:all .3s}
+.slide-dot.on{background:var(--a);width:20px}
+.slide-prev,.slide-next{position:absolute;top:50%;transform:translateY(-50%);z-index:5;border:0;background:rgba(0,0,0,.45);color:#fff;width:36px;height:36px;border-radius:50%;font-size:1rem;cursor:pointer;backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,.15)}
+.slide-prev{left:8px}.slide-next{right:8px}
 .slideshow-empty{display:none}
-
-/* Stock counter badge */
-.stock-low{
-  position:absolute;bottom:10px;left:10px;z-index:3;
-  background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.4);
-  color:#fca5a5;font-size:.72rem;font-weight:800;
-  padding:4px 10px;border-radius:999px;backdrop-filter:blur(4px);
-}
-/* Share button */
-.share-btn{
-  position:absolute;bottom:10px;right:10px;z-index:3;
-  border:0;border-radius:999px;width:32px;height:32px;
-  background:rgba(15,11,24,.85);color:#fff;cursor:pointer;
-  border:1px solid rgba(255,255,255,.1);font-size:.9rem;
-  display:flex;align-items:center;justify-content:center;
-}
-.share-btn:active{transform:scale(.92)}
-
-/* Recently Viewed section */
-.rv-row{display:flex;gap:10px;overflow-x:auto;padding-bottom:8px;-webkit-overflow-scrolling:touch}
-.rv-card{flex:0 0 120px;border-radius:16px;overflow:hidden;background:linear-gradient(180deg,rgba(24,19,38,.95),rgba(10,8,18,.98));border:1px solid rgba(255,255,255,.09);cursor:pointer;transition:transform .15s}
-.rv-card:active{transform:scale(.97)}
-.rv-img{aspect-ratio:1/1;overflow:hidden;background:linear-gradient(135deg,rgba(255,77,125,.14),rgba(139,92,246,.14))}
-.rv-img img{width:100%;height:100%;object-fit:cover}
-.rv-info{padding:8px}
-.rv-name{font-size:.78rem;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.rv-price{font-size:.75rem;color:var(--green);font-weight:700;margin-top:2px}
 
 /* WhatsApp floating button */
 .wa-float{
@@ -196,40 +163,6 @@ select,input[type=number],input[type=text],textarea{width:100%;background:#14112
 }
 /* When both popular badge and sale badge exist, stack them */
 .badge-sale-offset{top:44px}
-
-/* Recently Viewed */
-.rv-grid{display:flex;gap:10px;overflow-x:auto;padding-bottom:8px;-webkit-overflow-scrolling:touch}
-.rv-card{flex:0 0 120px;border-radius:16px;overflow:hidden;background:linear-gradient(180deg,rgba(24,19,38,.97),rgba(10,8,18,.99));border:1px solid var(--line);cursor:pointer;transition:transform .2s}
-.rv-card:active{transform:scale(.97)}
-.rv-img{aspect-ratio:1/1;overflow:hidden;background:rgba(255,77,125,.08)}
-.rv-img img{width:100%;height:100%;object-fit:cover}
-.rv-info{padding:7px 8px}
-.rv-name{font-size:.78rem;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.rv-price{font-size:.75rem;color:var(--green);font-weight:700;margin-top:2px}
-
-/* Cinematic ads */
-.slideshow{position:relative;overflow:hidden;width:100%;background:#000;border-bottom:1px solid var(--line)}
-.slides-track{display:flex;transition:transform .6s cubic-bezier(.77,0,.18,1);will-change:transform}
-.slide{flex:0 0 100%;position:relative;cursor:pointer;overflow:hidden}
-.slide img{width:100%;height:200px;object-fit:cover;display:block;transform:scale(1.06);transition:transform 4s ease-out}
-@media(min-width:600px){.slide img{height:260px}}
-.slide.active img{transform:scale(1)}
-.slide-overlay{position:absolute;inset:0;background:linear-gradient(to right,rgba(0,0,0,.82) 0%,rgba(0,0,0,.3) 55%,rgba(0,0,0,.1) 100%)}
-.slide-overlay::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,77,125,.22),transparent 55%)}
-.slide-info{position:absolute;top:50%;left:0;right:0;padding:14px 16px;transform:translateY(calc(-50% + 8px));opacity:0;transition:transform .5s ease,opacity .5s ease}
-.slide.active .slide-info{transform:translateY(-50%);opacity:1}
-.slide-badge{display:inline-block;padding:4px 10px;border-radius:999px;background:linear-gradient(135deg,var(--a),var(--b));font-size:.68rem;font-weight:900;margin-bottom:6px;letter-spacing:.5px}
-.slide-name{font-size:clamp(1rem,4vw,1.5rem);font-weight:900;line-height:1.15;margin-bottom:4px;text-shadow:0 2px 8px rgba(0,0,0,.9);max-width:60%}
-.slide-price{font-size:.95rem;font-weight:900;color:var(--green)}
-.slide-cat{font-size:.75rem;color:rgba(255,255,255,.65);margin-top:2px}
-.slide-cta{display:inline-block;margin-top:8px;padding:7px 16px;border-radius:999px;background:linear-gradient(135deg,var(--a),var(--b));font-weight:900;font-size:.78rem;color:#fff;box-shadow:0 3px 12px rgba(255,77,125,.5)}
-.slide-dots{display:flex;justify-content:center;align-items:center;gap:5px;padding:7px 0 8px;background:rgba(0,0,0,.5);backdrop-filter:blur(4px)}
-.slide-dot{width:5px;height:5px;border-radius:999px;background:rgba(255,255,255,.3);border:0;cursor:pointer;transition:all .35s;padding:0}
-.slide-dot.on{background:var(--a);width:18px}
-.slide-prev,.slide-next{position:absolute;top:50%;transform:translateY(-50%);z-index:5;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.45);color:#fff;width:32px;height:32px;border-radius:50%;font-size:1.1rem;cursor:pointer;backdrop-filter:blur(6px);transition:background .2s;display:flex;align-items:center;justify-content:center}
-.slide-prev:active,.slide-next:active{background:rgba(255,77,125,.6)}
-.slide-prev{left:8px}.slide-next{right:8px}
-.slide-progress{position:absolute;bottom:0;left:0;height:2px;background:linear-gradient(90deg,var(--a),var(--b));width:0;transition:width linear;z-index:6}
 </style>
 </head>
 <body>
@@ -311,29 +244,12 @@ select,input[type=number],input[type=text],textarea{width:100%;background:#14112
     </div>
   </div>
 
-  <div id="rvSection" style="display:none">
-  <div class="sectiontitle"><h3>Recently Viewed</h3><span id="rvCount"></span></div>
-  <div id="rvRow" class="rv-row"></div>
-</div>
-
-<div id="shop" class="sectiontitle"><h3>Products</h3><span id="resultInfo">0 items</span></div>
+  <div id="shop" class="sectiontitle"><h3>Products</h3><span id="resultInfo">0 items</span></div>
   <div id="grid" class="grid"></div>
   <div class="pager">
     <button class="btn btn2" onclick="prevPage()">Prev</button>
     <span id="pageInfo"></span>
     <button class="btn btn2" onclick="nextPage()">Next</button>
-  </div>
-
-  <!-- Recently Viewed -->
-  <div id="rvSection" style="display:none">
-    <div class="sectiontitle"><h3>Recently Viewed</h3><span id="rvClear" style="cursor:pointer;color:var(--muted)" onclick="clearRecentlyViewed()">Clear</span></div>
-    <div id="rvGrid" class="rv-grid"></div>
-  </div>
-
-  <!-- Related Products -->
-  <div id="relSection" style="display:none">
-    <div class="sectiontitle"><h3>You might also like</h3><span></span></div>
-    <div id="relGrid" class="rv-grid"></div>
   </div>
 </div>
 
@@ -421,11 +337,7 @@ function filtered(){
   const sale=$('saleFilter').value;
   const sort=$('sortFilter').value;
   // Category filter — Sale chip only shows products with category==='Sale'
-  if(category!=='All') list=list.filter(p=>{
-    // Check both main category and multi-category array
-    if(Array.isArray(p.categories)) return p.categories.includes(category);
-    return p.category===category;
-  });
+  if(category!=='All') list=list.filter(p=>p.category===category);
   if(q) list=list.filter(p=>[p.name,p.desc,(p.colors||[]).join(' '),(p.sizes||[]).join(' '),p.category||'',p.subCategory||''].join(' ').toLowerCase().includes(q));
   if(color) list=list.filter(p=>(p.colors||[]).includes(color));
   if(size) list=list.filter(p=>(p.sizes||[]).map(String).includes(String(size)));
@@ -459,20 +371,16 @@ function render(){
     const isSoldOut = p.soldOut === true;
     const isPopular = p.popular === true;
     const hasSale   = p.sale && !isSoldOut;
-    const stockLow  = !isSoldOut && p.stock !== null && p.stock !== undefined && p.stock <= 5 && p.stock > 0;
     return `<div class="card ${isSoldOut?'is-soldout':''}">
-      ${isPopular?`<div class="badge-popular">🔥 Popular</div>`:''}
+      ${isPopular?`<div class="badge-popular ${hasSale?'':''}">🔥 Popular</div>`:''}
       ${hasSale?`<div class="badge ${isPopular?'badge-sale-offset':''}">${p.sale}</div>`:''}
       ${isSoldOut?`<div class="sold-out-overlay"><div class="sold-out-tag">Sold Out</div></div>`:''}
-      ${stockLow?`<div class="stock-low">Only ${p.stock} left!</div>`:''}
       <button class="like ${liked?'on':''}" onclick="toggleWishlist(${idx})">♥</button>
-      <button class="share-btn" onclick="shareProduct(event,${idx})" title="Share">&#8679;</button>
       ${buildCardGallery(p, idx)}
       <div class="pad">
         <div class="name">${p.name||''}</div>
         <div class="meta">${p.desc||''}</div>
         <div class="price"><span>R${p.price||0}</span><span class="saletag">${p.category||''}${p.subCategory&&p.subCategory!=='All Items'?' · '+p.subCategory:''}</span></div>
-        ${p.stock&&p.stock<=5&&!isSoldOut?'<div style="color:#f59e0b;font-size:.78rem;font-weight:800;margin-top:4px">⚡ Only '+p.stock+' left!</div>':''}
         <div class="swatches">${(p.colors||[]).slice(0,5).map(c=>`<span class="swatch" title="${c}" style="background:${COLOR_MAP[c]||'#888'}"></span>`).join('')}</div>
         <div class="optline">
           <select id="c${idx}" ${isSoldOut?'disabled':''}>${(p.colors||['Black']).map(c=>`<option>${c}</option>`).join('')}</select>
@@ -581,10 +489,8 @@ function quickView(i){
       <div class="muted" style="margin-top:12px">Category: ${p.category||''}${p.subCategory&&p.subCategory!=='All Items'?' · '+p.subCategory:''}</div>
       <div class="muted" style="margin-top:6px">Colors: ${(p.colors||[]).join(', ')||'None'}</div>
       <div class="muted">Sizes: ${(p.sizes||[]).join(', ')||'None'}</div>
-      ${renderRelated(p)}
     </div>`;
   $('mask').style.display='block';$('quick').classList.add('open');
-  trackView(p.id);
 
   if(qimgs.length>1){
     function qSlide(dir){
@@ -662,174 +568,99 @@ function cardTouchEnd(e,el){
 renderChips();
 loadProducts();
 
-// ── Recently Viewed ──────────────────────────────────────────────────────────
-const RV_KEY = 'fk_recently_viewed';
-let recentlyViewed = JSON.parse(localStorage.getItem(RV_KEY)||'[]');
+// ── Slideshow ─────────────────────────────────────────────────────────────────
+let slideIdx=0,slideTimer=null,slideProducts=[],touchStartX=0;
 
-function trackView(p){
-  recentlyViewed = recentlyViewed.filter(x=>x.id!==p.id);
-  recentlyViewed.unshift({id:p.id,name:p.name,price:p.price,img:p.img});
-  if(recentlyViewed.length>10) recentlyViewed.pop();
-  localStorage.setItem(RV_KEY, JSON.stringify(recentlyViewed));
-  renderRecentlyViewed();
+function isAdActive(ad){
+  const now   = new Date();
+  const today = now.toISOString().slice(0,10);
+  const hour  = now.getHours();
+  if(!ad.active) return false;
+  if(ad.startDate && ad.startDate > today) return false;
+  if(ad.endDate   && ad.endDate   < today) return false;
+  if(ad.hourTo !== 24){
+    if(hour < (ad.hourFrom||0) || hour >= (ad.hourTo||24)) return false;
+  }
+  return true;
 }
-
-function renderRecentlyViewed(){
-  const box=$('rvSection'), grid=$('rvGrid'); if(!box||!grid) return;
-  const list = recentlyViewed.filter(x=>x.id); // filter valid
-  if(!list.length){ box.style.display='none'; return; }
-  box.style.display='block';
-  grid.innerHTML = list.map(x=>`
-    <div class="rv-card" onclick="jumpToProduct('${x.id}')">
-      <div class="rv-img">${x.img?`<img src="${x.img}" onerror="this.style.display='none'">`:'<div style="height:100%;background:rgba(255,77,125,.1)"></div>'}</div>
-      <div class="rv-info">
-        <div class="rv-name">${x.name}</div>
-        <div class="rv-price">R${x.price}</div>
-      </div>
-    </div>`).join('');
-}
-
-function clearRecentlyViewed(){
-  recentlyViewed=[];
-  localStorage.setItem(RV_KEY,'[]');
-  renderRecentlyViewed();
-}
-
-// ── Related Products ─────────────────────────────────────────────────────────
-function renderRelated(p){
-  const box=$('relSection'), grid=$('relGrid'); if(!box||!grid) return;
-  const cats = Array.isArray(p.categories) ? p.categories : [p.category];
-  const related = products.filter(x=>
-    x.id!==p.id && x.visible!==false &&
-    (cats.some(c=>(x.categories||[x.category]).includes(c)))
-  ).slice(0,6);
-  if(!related.length){ box.style.display='none'; return; }
-  box.style.display='block';
-  grid.innerHTML = related.map(x=>`
-    <div class="rv-card" onclick="jumpToProductAndView('${x.id}')">
-      <div class="rv-img">${x.img?`<img src="${x.img}" onerror="this.style.display='none'">`:'<div style="height:100%;background:rgba(139,92,246,.1)"></div>'}</div>
-      <div class="rv-info">
-        <div class="rv-name">${x.name}</div>
-        <div class="rv-price">R${x.price}</div>
-      </div>
-    </div>`).join('');
-}
-
-function jumpToProductAndView(id){
-  closePanels();
-  setTimeout(()=>{
-    const idx=products.findIndex(x=>x.id===id);
-    if(idx>=0) quickView(idx);
-  },200);
-}
-
-// ── Cinematic Slideshow (upgraded) ───────────────────────────────────────────
-let slideIdx=0,slideTimer=null,slideProgress=null,slideProducts=[],touchStartX=0;
 
 function buildSlideshow(prods, adsConfig){
-  const slideData=[];
-  const activeAds=(adsConfig||[]).filter(isAdActive);
-  activeAds.forEach(ad=>{
-    const p=prods.find(x=>x.id===ad.productId);
-    if(p&&p.img) slideData.push({id:p.id,img:p.img,name:p.name,price:p.price,category:p.category,subCategory:p.subCategory,sale:ad.label||p.sale});
-  });
-  slideProducts=slideData;
+  adsConfig = adsConfig || [];
   const ss=$('slideshow');
+  let slideData = [];
+
+  // Only show ads you have chosen and scheduled — no automatic fallback
+  const activeAds = adsConfig.filter(isAdActive);
+  activeAds.forEach(ad=>{
+    const p = prods.find(x=>x.id===ad.productId);
+    if(p && p.img) slideData.push({
+      id: p.id,
+      img: p.img,
+      name: p.name,
+      price: p.price,
+      category: p.category,
+      subCategory: p.subCategory,
+      sale: ad.label || p.sale
+    });
+  });
+
+  slideProducts = slideData;
   if(!slideProducts.length){ss.style.display='none';return;}
   ss.style.display='block';
 
-  $('slidesTrack').innerHTML=slideProducts.map((p,i)=>`
-    <div class="slide ${i===0?'active':''}" onclick="jumpToProduct('${p.id}')">
-      <img src="${p.img}" alt="${p.name}" onerror="this.parentElement.style.display='none'" loading="lazy">
+  $('slidesTrack').innerHTML=slideProducts.map((p,i)=>
+    `<div class="slide" onclick="jumpToProduct('${p.id}')">
+      <img src="${p.img}" alt="${p.name}" onerror="this.parentElement.style.display='none'">
       <div class="slide-overlay"></div>
       <div class="slide-info">
         ${p.sale?`<div class="slide-badge">${p.sale}</div>`:''}
         <div class="slide-name">${p.name}</div>
         <div class="slide-price">R${p.price}</div>
-        <div class="slide-cat">${p.category}${p.subCategory&&p.subCategory!=='All Items'?' · '+p.subCategory:''}</div>
-        <div class="slide-cta">Shop Now →</div>
+        <div class="slide-cat">${p.category||''}${p.subCategory&&p.subCategory!=='All Items'?' · '+p.subCategory:''}</div>
       </div>
-      <div class="slide-progress" id="prog${i}"></div>
     </div>`).join('');
 
   $('slideDots').innerHTML=slideProducts.map((_,i)=>
     `<button class="slide-dot ${i===0?'on':''}" onclick="goSlide(${i})"></button>`).join('');
-
   goSlide(0);
+  clearInterval(slideTimer);
+  slideTimer=setInterval(()=>goSlide(slideIdx+1),3500);
 
-  // Touch/swipe
-  const track=$('slidesTrack');
-  track.addEventListener('touchstart',e=>{touchStartX=e.touches[0].clientX;},{passive:true});
-  track.addEventListener('touchend',e=>{
+  $('slidesTrack').addEventListener('touchstart',e=>{touchStartX=e.touches[0].clientX;},{passive:true});
+  $('slidesTrack').addEventListener('touchend',e=>{
     const diff=touchStartX-e.changedTouches[0].clientX;
     if(Math.abs(diff)>40) slideMove(diff>0?1:-1);
   },{passive:true});
 }
 
 function goSlide(n){
-  const prev=slideIdx;
   slideIdx=(n+slideProducts.length)%slideProducts.length;
-
-  // Update track
   $('slidesTrack').style.transform=`translateX(-${slideIdx*100}%)`;
-
-  // Update active class for zoom + info animation
-  $('slidesTrack').querySelectorAll('.slide').forEach((s,i)=>s.classList.toggle('active',i===slideIdx));
-
-  // Dots
   $('slideDots').querySelectorAll('.slide-dot').forEach((d,i)=>d.classList.toggle('on',i===slideIdx));
-
-  // Progress bar
-  if(slideProgress) clearInterval(slideProgress);
-  const progEl=document.getElementById('prog'+slideIdx);
-  if(progEl){
-    progEl.style.transition='none'; progEl.style.width='0';
-    requestAnimationFrame(()=>{
-      requestAnimationFrame(()=>{
-        progEl.style.transition='width 4s linear';
-        progEl.style.width='100%';
-      });
-    });
-  }
-
-  // Auto advance
-  clearInterval(slideTimer);
-  slideTimer=setInterval(()=>goSlide(slideIdx+1), 4500);
 }
 
 function slideMove(dir){
   goSlide(slideIdx+dir);
+  clearInterval(slideTimer);
+  slideTimer=setInterval(()=>goSlide(slideIdx+1),3500);
 }
 
 function jumpToProduct(id){
   if(!id) return;
-  const idx=products.findIndex(x=>x.id===id);
-  if(idx<0) return;
-  const list=filtered();
-  const li=list.findIndex(p=>p.id===id);
-  if(li<0){ setCategory('All'); }
-  else { page=Math.floor(li/per); }
-  render(); scrollToShop();
+  const allList=filtered();
+  const listIdx=allList.findIndex(p=>p.id===id);
+  if(listIdx<0){setCategory('All');return;}
+  page=Math.floor(listIdx/per);
+  render();
+  scrollToShop();
   setTimeout(()=>{
     const cards=$('grid').querySelectorAll('.card');
-    const ci=(li>=0?li:0)%per;
-    if(cards[ci]){
-      cards[ci].style.transition='box-shadow .3s';
-      cards[ci].style.boxShadow='0 0 0 3px var(--a)';
-      cards[ci].scrollIntoView({behavior:'smooth',block:'center'});
-      setTimeout(()=>{cards[ci].style.boxShadow='';},1500);
-    }
-  },250);
+    const ci=listIdx%per;
+    if(cards[ci]){cards[ci].style.boxShadow='0 0 0 2px var(--a)';setTimeout(()=>{cards[ci].style.boxShadow='';},1200);}
+  },200);
 }
 
-// Track view when quickView opens
-const _origQV = quickView;
-window.quickView = function(i){
-  _origQV(i);
-  const p=products[i];
-  if(p){ trackView(p); renderRelated(p); }
-};
 
-renderRecentlyViewed();
-
-
+</script>
+</body>
+</html>
